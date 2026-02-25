@@ -6,33 +6,48 @@
     <title>Indie Search</title>
     <meta
       name="description"
-      content="A statically hosted indie search interface powered by Exa."
-    />
-    <link
-      rel="preconnect"
-      href="https://fonts.googleapis.com"
-    />
-    <link
-      rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
-      rel="stylesheet"
+      content="A throwback search experience that lets you plug in your own Exa API key."
     />
     <style>
       :root {
-        color-scheme: light;
-        --bg: #0c1320;
-        --card: rgba(255, 255, 255, 0.05);
-        --panel-bg: rgba(255, 255, 255, 0.12);
-        --accent: #1c82ff;
-        --muted: #9ba7c6;
-        --border: rgba(255, 255, 255, 0.18);
-        --text: #f9fbff;
-        --note: #cfd9ff;
-        font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+        font-family: "Georgia", "Times New Roman", serif;
+        --body-bg: #f7f7f7;
+        --shell-bg: #fff;
+        --border-color: #ddd;
+        --text-color: #111;
+        --subtext: #555;
+        --muted: #666;
+        --hotkey-text: #777;
+        --result-border: #eee;
+        --result-bg: #fff;
+        --result-highlight-bg: #f1f3ff;
+        --result-highlight-border: #cfd8ff;
+        --link-color: #1a0dab;
+        --desc-color: #3c4043;
+        --url-color: #007200;
+        --panel-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --button-bg: #1a73e8;
+        --button-border: #1a73e8;
+      }
+
+      html[data-theme="dark"] {
+        --body-bg: #0c0d11;
+        --shell-bg: #14161f;
+        --border-color: #2e2f3f;
+        --text-color: #eceff4;
+        --subtext: #c0c4d7;
+        --muted: #a7a9b8;
+        --hotkey-text: #c5c7d8;
+        --result-border: #1f2029;
+        --result-bg: #1c1f2a;
+        --result-highlight-bg: rgba(112, 129, 255, 0.18);
+        --result-highlight-border: rgba(112, 129, 255, 0.5);
+        --link-color: #8ab4f8;
+        --desc-color: #e8eaed;
+        --url-color: #8abf3b;
+        --panel-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
+        --button-bg: #8ab4f8;
+        --button-border: #8ab4f8;
       }
 
       * {
@@ -40,333 +55,464 @@
       }
 
       body {
-        min-height: 100vh;
         margin: 0;
-        background: radial-gradient(circle at top, rgba(76, 197, 255, 0.08), transparent 40%),
-          linear-gradient(120deg, #0e1427, #050811 55%, #10193c);
-        color: var(--text);
-      }
-
-      body::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        background-size: 3px 3px;
-        pointer-events: none;
-        opacity: 0.25;
-        mix-blend-mode: screen;
-      }
-
-      .page-shell {
-        position: relative;
         min-height: 100vh;
+        background: var(--body-bg);
         display: flex;
-        flex-direction: column;
         justify-content: center;
-        padding: 4vw clamp(1.5rem, 2vw, 2.25rem);
-        gap: clamp(1.5rem, 2vw, 2.5rem);
+        padding: 2rem 1rem 2.5rem;
       }
 
-      main {
-        display: flex;
-        flex-wrap: wrap;
-        gap: clamp(1.5rem, 2vw, 2.75rem);
-        justify-content: center;
+      .shell {
+        width: min(920px, 100%);
+        background: var(--shell-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        box-shadow: var(--panel-shadow);
+        padding: 2rem 2.5rem 2.75rem;
       }
 
-      .panel {
-        position: relative;
-        border: 1px solid var(--border);
-        border-radius: 1.5rem;
-        background: var(--panel-bg);
-        backdrop-filter: blur(18px);
-        min-width: 280px;
-        padding: clamp(1.5rem, 2vw, 2rem);
-        box-shadow: 0 20px 45px rgba(6, 9, 20, 0.6);
+      .logo {
+        font-size: 3rem;
+        letter-spacing: -0.03em;
+        margin: 0;
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .logo span {
+        font-family: "Arial", sans-serif;
+      }
+
+      .logo .blue {
+        color: #1a73e8;
+      }
+
+      .logo .red {
+        color: #ea4335;
+      }
+
+      .logo .yellow {
+        color: #fbbc05;
+      }
+
+      .logo .green {
+        color: #34a853;
+      }
+
+      .section {
+        margin-top: 1.6rem;
+        font-family: "Arial", sans-serif;
       }
 
       .key-panel {
-        flex: 1 1 320px;
-        max-width: 420px;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+        padding-bottom: 1.6rem;
+        border-bottom: 1px solid #e0e0e0;
       }
 
-      .panel h1 {
-        margin: 0;
-        font-size: clamp(2.25rem, 3vw, 2.9rem);
-        line-height: 1.2;
-        letter-spacing: -0.02em;
-      }
-
-      .eyebrow {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.3em;
-        color: var(--note);
-      }
-
-      .panel p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.6;
-      }
-
-      .api-card {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-
-      label {
+      .label {
+        display: block;
         font-size: 0.95rem;
+        margin-bottom: 0.45rem;
+        color: var(--subtext);
       }
 
       input {
         width: 100%;
-        border-radius: 0.9rem;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        padding: 0.85rem 1rem;
-        background: rgba(255, 255, 255, 0.06);
-        color: var(--text);
+        border: 1px solid #cfcfcf;
+        border-radius: 6px;
+        padding: 0.85rem 0.95rem;
         font-size: 1rem;
         font-family: inherit;
-        outline: none;
-        transition: border 0.2s ease, background 0.2s ease;
+        background: #fff;
+        transition: border 0.15s ease;
       }
 
       input:focus {
-        border-color: var(--accent);
-        background: rgba(255, 255, 255, 0.15);
+        border-color: #4d90fe;
+        outline: none;
       }
 
       .field-row {
         display: flex;
-        gap: 0.75rem;
-        align-items: stretch;
-      }
-
-      .field-row button {
-        flex: 0 0 auto;
+        gap: 0.8rem;
       }
 
       button {
-        border: 0;
-        border-radius: 999px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        padding: 0 1.4rem;
-        letter-spacing: 0.04em;
-        background: linear-gradient(135deg, #00bfff, #1c82ff);
+        border: 1px solid var(--button-border);
+        border-radius: 5px;
+        background: var(--button-bg);
         color: #fff;
+        font-weight: 600;
         cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        padding: 0 1.6rem;
+        transition: background 0.2s ease;
       }
 
-      button:hover {
-        transform: translateY(-1px) scale(1.01);
-        box-shadow: 0 10px 25px rgba(28, 130, 255, 0.35);
+      button:hover:not(:disabled) {
+        background: #1659c3;
       }
 
       button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
+        background: #93b7ff;
+      }
+
+      .key-status {
+        font-size: 0.85rem;
+        color: var(--subtext);
+        margin: 0.6rem 0 0;
+      }
+
+
+      .key-note {
+        font-size: 0.83rem;
+        color: var(--muted);
+        margin: 0.25rem 0 0;
+        line-height: 1.4;
+      }
+
+      .country-picker {
+        margin-top: 0.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .country-picker select {
+        width: 220px;
+        border-radius: 5px;
+        border: 1px solid #cfcfcf;
+        padding: 0.7rem 0.85rem;
+        font-size: 0.95rem;
+        background: #fff;
+      }
+
+      .key-panel {
+        position: relative;
+      }
+
+      .key-panel .key-panel-content {
+        display: block;
+      }
+
+      .key-panel.collapsed .key-panel-content {
+        display: none;
+      }
+
+      .key-panel-toggle {
+        margin-top: 0.75rem;
+        border: none;
+        background: none;
+        color: #1a73e8;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+        font-size: 0.9rem;
+      }
+
+      .key-panel-toggle.hidden {
+        display: none;
       }
 
       .search-panel {
-        flex: 1 1 500px;
+        margin-top: 0.85rem;
+      }
+
+      .hotkeys-note {
+        font-size: 0.78rem;
+        color: var(--hotkey-text);
+        margin-top: 0.5rem;
+      }
+
+      .theme-toggle {
+        margin-top: 0.7rem;
+        font-size: 0.8rem;
+        color: var(--muted);
         display: flex;
-        flex-direction: column;
-        gap: 1rem;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .theme-toggle .theme-toggle-group {
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      .theme-toggle button.small-pill {
+        padding: 0.25rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        border: 1px solid transparent;
+        background: none;
+        color: var(--subtext);
+        cursor: pointer;
+        transition: background 0.2s ease, border 0.2s ease;
+      }
+
+      .theme-toggle button.small-pill.active {
+        background: var(--button-bg);
+        border-color: var(--button-border);
+        color: #fff;
+      }
+
+      .theme-toggle button.small-pill:focus {
+        outline: 2px solid var(--button-border);
+        outline-offset: 2px;
       }
 
       .search-input {
         display: flex;
-        gap: 0.75rem;
+        gap: 0.9rem;
         align-items: center;
       }
 
-      .search-input input {
-        flex: 1;
-      }
-
-      .results-list {
-        display: grid;
-        gap: 1rem;
-        min-height: 200px;
-      }
-
-      .empty {
-        color: var(--muted);
-        font-size: 0.95rem;
-        line-height: 1.6;
-      }
-
-      .result-card {
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 1.1rem 1.2rem;
-        border-radius: 1rem;
-        background: rgba(255, 255, 255, 0.02);
-        animation: cardFade 0.35s ease;
-      }
-
-      @keyframes cardFade {
-        from {
-          opacity: 0;
-          transform: translate3d(0, 10px, 0);
-        }
-        to {
-          opacity: 1;
-          transform: translate3d(0, 0, 0);
-        }
-      }
-
-      .result-card a {
-        display: inline-block;
-        color: var(--accent);
-        font-size: 1.15rem;
-        font-weight: 600;
-        text-decoration: none;
-      }
-
-      .result-card a:hover {
-        text-decoration: underline;
-      }
-
-      .result-url {
-        font-size: 0.82rem;
-        color: var(--note);
-        margin-top: 0.35rem;
-        font-family: "JetBrains Mono", monospace;
+      .search-input button {
+        padding-left: 2rem;
+        padding-right: 2rem;
       }
 
       .status-message {
-        font-size: 0.95rem;
-        min-height: 1.2rem;
-        color: var(--muted);
-        position: relative;
-      }
-
-      .status-message[data-state="loading"] {
-        color: #64b0ff;
-      }
-
-      .status-message[data-state="loading"]::after {
-        content: "•";
-        margin-left: 0.35rem;
-        animation: pulseDot 1s infinite;
-      }
-
-      @keyframes pulseDot {
-        0% {
-          opacity: 0.2;
-          transform: scale(0.9);
-        }
-        50% {
-          opacity: 1;
-          transform: scale(1.2);
-        }
-        100% {
-          opacity: 0.2;
-          transform: scale(0.9);
-        }
+        margin-top: 0.65rem;
+        font-size: 0.85rem;
+        color: var(--subtext);
+        min-height: 1rem;
       }
 
       .status-message[data-state="error"] {
-        color: #ff7c7c;
+        color: #d93025;
       }
 
-      .key-status {
-        font-size: 0.9rem;
-        color: var(--note);
+      .results-list {
+        margin-top: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
       }
 
-      .key-note {
-        font-size: 0.85rem;
-        color: var(--note);
-        line-height: 1.5;
+      .result-card {
+        padding-bottom: 0.65rem;
+        border-bottom: 1px solid var(--result-border);
+        background: var(--result-bg);
+      }
+
+      .result-card:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .result-card.highlighted {
+        background: var(--result-highlight-bg);
+        border-color: var(--result-highlight-border);
+      }
+
+      .result-card a {
+        color: var(--link-color);
+        font-size: 1.18rem;
+        text-decoration: underline;
+        font-family: "Arial", sans-serif;
+      }
+
+      .result-description {
+        margin: 0.35rem 0 0;
+        font-size: 0.95rem;
+        color: var(--desc-color);
+        font-style: italic;
+      }
+
+      .result-url {
+        margin: 0.25rem 0 0;
+        font-size: 0.82rem;
+        color: var(--url-color);
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      .result-place-holder {
+        margin: 0;
+        color: #767676;
+        font-size: 0.95rem;
       }
 
       .footer-note {
+        margin-top: 2rem;
+        font-size: 0.8rem;
+        color: #777;
         text-align: center;
-        font-size: 0.82rem;
-        color: var(--note);
-        padding-bottom: 1.5rem;
       }
 
-      @media (max-width: 720px) {
-        .panel {
-          border-radius: 1.15rem;
-          padding: 1.25rem;
+      @media (max-width: 600px) {
+        .shell {
+          padding: 1.5rem;
         }
 
-        .field-row {
+        .field-row,
+        .search-input {
           flex-direction: column;
         }
       }
     </style>
   </head>
   <body>
-    <div class="page-shell">
-      <main>
-        <section class="panel key-panel">
-          <p class="eyebrow">Indie Search</p>
-          <h1>Search with an intentional, indie web palette.</h1>
-          <p>
-            Supply your own Exa API key, store it locally, and run searches just like a
-            cozy, commitment-friendly search engine.
-          </p>
-          <form class="api-card" id="key-form">
-            <label for="api-key">Add your key here</label>
+    <div class="shell">
+      <p class="logo">
+        <span class="blue">I</span>
+        <span class="red">n</span>
+        <span class="yellow">d</span>
+        <span class="blue">i</span>
+        <span class="green">e</span>
+        <span> </span>
+        <span class="blue">S</span>
+        <span class="red">e</span>
+        <span class="yellow">a</span>
+        <span class="blue">r</span>
+        <span class="green">c</span>
+        <span class="red">h</span>
+      </p>
+      <section class="section key-panel" id="key-panel">
+        <div class="key-panel-content" id="key-panel-content">
+          <label class="label" for="api-key">Add your key here</label>
+          <form id="key-form">
             <div class="field-row">
               <input id="api-key" type="password" autocomplete="off" placeholder="sk-***" />
               <button id="save-key" type="submit">Save key</button>
             </div>
-            <p class="key-status" id="key-status">Key not saved yet.</p>
-            <p class="key-note">
-              This page stores your key in the browser’s local storage so that the key never leaves your
-              machine unless you share it. You can delete it at any time or clear storage to reset access.
-            </p>
           </form>
-        </section>
-        <section class="panel search-panel">
-          <form class="search-input" id="search-form">
-            <input
-              id="search-input"
-              name="s"
-              autocomplete="off"
-              placeholder="What are you looking for?"
-            />
-            <button id="search-button" type="submit">Search</button>
-          </form>
-          <div class="status-message" id="status-message"></div>
-          <div class="results-list" id="results-list">
-            <p class="empty">Awaiting your first search.</p>
+          <p class="key-status" id="key-status">Key not saved yet.</p>
+          <p class="key-note">
+            This page keeps your key in local storage so it never leaves your browser unless you share it.
+            Clear storage to remove it.
+          </p>
+          <div class="country-picker">
+            <label for="country-select">Your country</label>
+            <select id="country-select" aria-label="Select country">
+              <option value="us">United States</option>
+              <option value="ca">Canada</option>
+              <option value="gb">United Kingdom</option>
+              <option value="au">Australia</option>
+              <option value="de">Germany</option>
+              <option value="fr">France</option>
+              <option value="jp">Japan</option>
+            </select>
           </div>
-        </section>
-      </main>
-      <footer class="footer-note">Results provided by Exa.ai.</footer>
+        </div>
+        <button
+          class="key-panel-toggle hidden"
+          id="toggle-key-panel"
+          type="button"
+          aria-expanded="false"
+        >
+          Change key
+        </button>
+      </section>
+      <section class="section search-panel">
+        <form class="search-input" id="search-form">
+          <input id="search-input" name="s" autocomplete="off" placeholder="Search the indie web" />
+          <button id="search-button" type="submit">Search</button>
+        </form>
+        <p class="hotkeys-note">
+          Hotkeys: `/` focus search, `Ctrl+K` toggle the API key form, `↑/↓` (or `j/k`) to select a
+          result, Enter to open it.
+        </p>
+        <div class="theme-toggle">
+          <span>Theme:</span>
+          <div class="theme-toggle-group" role="group" aria-label="Select theme">
+            <button class="small-pill" data-theme-value="light" type="button">Light</button>
+            <button class="small-pill" data-theme-value="dark" type="button">Dark</button>
+            <button class="small-pill" data-theme-value="system" type="button">System</button>
+          </div>
+        </div>
+        <p class="status-message" id="status-message"></p>
+        <div class="results-list" id="results-list">
+          <p class="result-place-holder">Awaiting your first search.</p>
+        </div>
+      </section>
+      <p class="footer-note">Results provided by Exa.ai.</p>
     </div>
     <script>
       const storageKey = "indieSearchKey";
       const maxResults = 10;
 
       const keyInput = document.getElementById("api-key");
-      const saveKeyButton = document.getElementById("save-key");
       const keyForm = document.getElementById("key-form");
       const keyStatus = document.getElementById("key-status");
+      const keyPanel = document.getElementById("key-panel");
+      const toggleKeyPanel = document.getElementById("toggle-key-panel");
+      const countrySelect = document.getElementById("country-select");
+      const countryStorageKey = "indieSearchCountry";
+      let keyPanelCollapsed = false;
       const searchForm = document.getElementById("search-form");
       const searchInput = document.getElementById("search-input");
       const resultsList = document.getElementById("results-list");
       const searchButton = document.getElementById("search-button");
       const statusMessage = document.getElementById("status-message");
+
+      const normalizeText = (value) =>
+        typeof value === "string"
+          ? value.replace(/\s+/g, " ").trim()
+          : "";
+
+      const themeStorageKey = "indieSearchTheme";
+      const systemMedia = window.matchMedia("(prefers-color-scheme: dark)");
+      let themePreference = "system";
+      let themeButtons = [];
+
+      const buildHighlightArray = (hit) => {
+        const highlights = [];
+        if (Array.isArray(hit?.highlights)) {
+          highlights.push(...hit.highlights);
+        }
+        if (Array.isArray(hit?.contents)) {
+          hit.contents.forEach((entry) => {
+            if (typeof entry === "string") {
+              highlights.push(entry);
+            } else if (entry?.text) {
+              highlights.push(entry.text);
+            }
+          });
+        }
+        return highlights.map(normalizeText).filter(Boolean);
+      };
+
+      const summarizeDescription = (hit) => {
+        if (hit?.description) {
+          return normalizeText(hit.description);
+        }
+        if (hit?.summary) {
+          return normalizeText(hit.summary);
+        }
+        if (hit?.snippet) {
+          return normalizeText(hit.snippet);
+        }
+        const highlights = buildHighlightArray(hit);
+        if (highlights.length) {
+          const first = highlights[0];
+          return first.length > 320 ? `${first.slice(0, 317)}...` : first;
+        }
+        return "No description available.";
+      };
+
+      function resolveTheme(pref) {
+        if (pref === "system") {
+          return systemMedia.matches ? "dark" : "light";
+        }
+        return pref;
+      }
+
+      function applyThemePreference(pref) {
+        themePreference = pref;
+        const resolved = resolveTheme(pref);
+        document.documentElement.setAttribute("data-theme", resolved);
+      }
+
+      function updateThemeButtons(buttons) {
+        buttons.forEach((btn) => {
+          const value = btn.dataset.themeValue;
+          const isActive = value === themePreference;
+          btn.classList.toggle("active", isActive);
+          btn.setAttribute("aria-pressed", isActive.toString());
+        });
+      }
 
       const searchProvider = {
         name: "Exa",
@@ -374,19 +520,21 @@
           const response = await fetch("https://api.exa.ai/search", {
             method: "POST",
             headers: {
-              "Accept": "application/json",
+              Accept: "application/json",
               "Content-Type": "application/json",
-              "x-api-key": key
+              "x-api-key": key,
             },
-            body: JSON.stringify({
-              query,
-              type: "auto",
-              contents: {
-                highlights: {
-                  maxCharacters: 4000
-                }
-              }
-            })
+          body: JSON.stringify({
+            query,
+            type: "auto",
+            userLocation: currentCountry,
+            numResults: maxResults,
+            contents: {
+              highlights: {
+                maxCharacters: 4000,
+              },
+            },
+          }),
           });
 
           if (!response.ok) {
@@ -405,18 +553,15 @@
             title:
               hit?.title || hit?.description || hit?.meta?.title || hit?.label || "Untitled result",
             url: hit?.url || hit?.link || hit?.metadata?.url || "",
-            description:
-              hit?.description ||
-              hit?.summary ||
-              Array.isArray(hit?.contents)
-                ? hit.contents.find((entry) => entry?.type === "highlight")?.text || hit.contents.map((entry) => entry?.text).join(" ")
-                : hit?.snippet ||
-              "No description available."
+            description: summarizeDescription(hit),
           }));
-        }
+        },
       };
 
       let currentKey = null;
+      let currentResults = [];
+      let highlightedIndex = -1;
+      let currentCountry = "us";
 
       function setStatus(message, state) {
         statusMessage.textContent = message;
@@ -431,11 +576,13 @@
         if (currentKey) {
           keyStatus.textContent = "Key saved locally. Ready to search.";
           searchButton.disabled = false;
+          setStatus("");
         } else {
           keyStatus.textContent = "Key not saved yet.";
           searchButton.disabled = true;
           setStatus("Enter a key above before searching.");
         }
+        updateKeyVisibility();
       }
 
       function loadKeyFromStorage() {
@@ -447,6 +594,47 @@
           }
         } catch (error) {
           console.warn("Unable to access localStorage", error);
+        }
+      }
+
+      function loadCountryFromStorage() {
+        try {
+          const stored = localStorage.getItem(countryStorageKey);
+          if (stored) {
+            currentCountry = stored;
+          }
+        } catch (error) {
+          console.warn("Unable to access country storage", error);
+        }
+      }
+
+      function syncCountrySelect() {
+        if (!countrySelect) {
+          return;
+        }
+        countrySelect.value = currentCountry;
+      }
+
+      function saveCountry(value) {
+        if (!value) {
+          return;
+        }
+        try {
+          localStorage.setItem(countryStorageKey, value);
+          currentCountry = value;
+        } catch (error) {
+          console.warn("Unable to store country", error);
+        }
+      }
+
+      function loadThemeFromStorage() {
+        try {
+          const stored = localStorage.getItem(themeStorageKey);
+          if (stored) {
+            themePreference = stored;
+          }
+        } catch (error) {
+          console.warn("Unable to access theme storage", error);
         }
       }
 
@@ -468,6 +656,55 @@
         }
       }
 
+      function applyKeyPanelState() {
+        if (!keyPanel) {
+          return;
+        }
+        keyPanel.classList.toggle("collapsed", keyPanelCollapsed);
+        if (!toggleKeyPanel) {
+          return;
+        }
+        toggleKeyPanel.textContent = keyPanelCollapsed ? "Change key" : "Hide key section";
+        toggleKeyPanel.setAttribute("aria-expanded", (!keyPanelCollapsed).toString());
+      }
+
+      function updateKeyVisibility() {
+        const hasKey = Boolean(currentKey);
+        if (hasKey) {
+          toggleKeyPanel.classList.remove("hidden");
+          keyPanelCollapsed = true;
+        } else {
+          toggleKeyPanel.classList.add("hidden");
+          keyPanelCollapsed = false;
+        }
+        applyKeyPanelState();
+      }
+
+      function moveHighlight(delta) {
+        const length = currentResults.length;
+        if (!length) {
+          return;
+        }
+        let next = highlightedIndex;
+        if (next === -1) {
+          next = delta > 0 ? 0 : length - 1;
+        } else {
+          next = Math.min(Math.max(0, next + delta), length - 1);
+        }
+        applyHighlight(next);
+      }
+
+      function activateHighlightedResult() {
+        if (highlightedIndex < 0) {
+          return;
+        }
+        const card = resultsList.querySelector(`.result-card[data-index="${highlightedIndex}"]`);
+        const targetLink = card?.querySelector("a");
+        if (targetLink) {
+          targetLink.click();
+        }
+      }
+
       function buildResultCard(item) {
         const card = document.createElement("article");
         card.className = "result-card";
@@ -479,6 +716,7 @@
         titleLink.rel = "noopener noreferrer";
 
         const description = document.createElement("p");
+        description.className = "result-description";
         description.textContent = item.description;
 
         const meta = document.createElement("p");
@@ -491,18 +729,36 @@
 
       function renderResults(results) {
         resultsList.innerHTML = "";
+        currentResults = results;
+        highlightedIndex = -1;
         if (!results.length) {
           const placeholder = document.createElement("p");
-          placeholder.className = "empty";
+          placeholder.className = "result-place-holder";
           placeholder.textContent = "No results yet. Try a different query.";
           resultsList.appendChild(placeholder);
           return;
         }
 
-        results.forEach((result) => {
+        results.forEach((result, index) => {
           const card = buildResultCard(result);
+          card.dataset.index = index;
           resultsList.appendChild(card);
         });
+      }
+
+      function applyHighlight(index) {
+        const cards = Array.from(resultsList.querySelectorAll(".result-card"));
+        cards.forEach((card) => card.classList.remove("highlighted"));
+        if (index < 0 || index >= cards.length) {
+          highlightedIndex = -1;
+          return;
+        }
+        highlightedIndex = index;
+        cards[index].classList.add("highlighted");
+        const link = cards[index].querySelector("a");
+        if (link) {
+          link.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
       }
 
       async function runSearch(query) {
@@ -544,19 +800,30 @@
           params.delete("s");
         }
         const queryString = params.toString();
-        const newUrl = queryString
-          ? `${window.location.pathname}?${queryString}`
-          : window.location.pathname;
+        const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
         window.history.replaceState({}, "", newUrl);
+      }
+
+      function decodeSearchParam(value) {
+        if (!value) {
+          return "";
+        }
+        try {
+          const replaced = value.replace(/\+/g, " ");
+          return decodeURIComponent(replaced);
+        } catch (error) {
+          return value.replace(/\+/g, " ");
+        }
       }
 
       function syncQueryFromUrl() {
         const params = new URLSearchParams(window.location.search);
         const searchParam = params.get("s");
-        if (searchParam) {
-          searchInput.value = searchParam;
+        const decoded = decodeSearchParam(searchParam);
+        if (decoded) {
+          searchInput.value = decoded;
           if (currentKey) {
-            runSearch(searchParam);
+            runSearch(decoded);
           } else {
             setStatus("Save your key to load the saved search.");
           }
@@ -565,7 +832,13 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         loadKeyFromStorage();
+        loadCountryFromStorage();
+        loadThemeFromStorage();
         updateKeyStatus();
+        syncCountrySelect();
+        themeButtons = Array.from(document.querySelectorAll(".theme-toggle button[data-theme-value]"));
+        applyThemePreference(themePreference);
+        updateThemeButtons(themeButtons);
 
         keyForm.addEventListener("submit", (event) => {
           event.preventDefault();
@@ -580,8 +853,105 @@
           runSearch(searchInput.value.trim());
         });
 
+        if (toggleKeyPanel) {
+          toggleKeyPanel.addEventListener("click", () => {
+            keyPanelCollapsed = !keyPanelCollapsed;
+            applyKeyPanelState();
+            if (!keyPanelCollapsed) {
+              keyInput.focus();
+            }
+          });
+        }
+
+        if (countrySelect) {
+          countrySelect.addEventListener("change", (event) => {
+            saveCountry(event.target.value);
+          });
+        }
+
+        themeButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const value = button.dataset.themeValue;
+            if (!value) {
+              return;
+            }
+            localStorage.setItem(themeStorageKey, value);
+            applyThemePreference(value);
+            updateThemeButtons(themeButtons);
+          });
+        });
+
+        document.addEventListener("keydown", (event) => {
+          const active = document.activeElement;
+          const isEditable =
+            active &&
+            (active.tagName === "INPUT" ||
+              active.tagName === "TEXTAREA" ||
+              active.isContentEditable);
+
+          if (
+            event.key === "/" &&
+            !event.metaKey &&
+            !event.ctrlKey &&
+            !event.altKey &&
+            !isEditable
+          ) {
+            event.preventDefault();
+            searchInput.focus();
+            return;
+          }
+
+          if (event.ctrlKey && event.key.toLowerCase() === "k") {
+            event.preventDefault();
+            if (!currentKey) {
+              keyInput.focus();
+              return;
+            }
+            keyPanelCollapsed = !keyPanelCollapsed;
+            applyKeyPanelState();
+            if (!keyPanelCollapsed) {
+              keyInput.focus();
+            }
+            return;
+          }
+
+          if (isEditable) {
+            return;
+          }
+
+          if (event.key === "ArrowDown" || event.key.toLowerCase() === "j") {
+            event.preventDefault();
+            moveHighlight(1);
+            return;
+          }
+
+          if (event.key === "ArrowUp" || event.key.toLowerCase() === "k") {
+            event.preventDefault();
+            moveHighlight(-1);
+            return;
+          }
+
+          if (event.key === "Enter") {
+            activateHighlightedResult();
+            return;
+          }
+        });
+
         syncQueryFromUrl();
       });
+
+      const handleSystemThemeChange = () => {
+        if (themePreference === "system") {
+          applyThemePreference("system");
+          updateThemeButtons(themeButtons);
+        }
+      };
+
+      if (systemMedia.addEventListener) {
+        systemMedia.addEventListener("change", handleSystemThemeChange);
+      } else if (systemMedia.addListener) {
+        systemMedia.addListener(handleSystemThemeChange);
+      }
     </script>
   </body>
 </html>
