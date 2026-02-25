@@ -1,0 +1,72 @@
+/* MacOS Terminal inspired theme for Indie Search */
+:root {
+  --body-bg: #04060d;
+  --shell-bg: #050711;
+  --border-color: #141b2d;
+  --text-color: #f5f8ff;
+  --subtext: #9aa7c7;
+  --muted: #76829c;
+  --hotkey-text: #7dd4ff;
+  --result-border: #0d0f16;
+  --result-bg: #05060c;
+  --result-highlight-bg: rgba(125, 212, 255, 0.12);
+  --result-highlight-border: rgba(125, 212, 255, 0.3);
+  --link-color: #78f7ff;
+  --desc-color: #cbd6f5;
+  --url-color: #8fffcf;
+  --panel-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+  --button-bg: #0a6cfd;
+  --button-border: #0a6cfd;
+}
+
+body {
+  background: radial-gradient(circle at top, rgba(125, 212, 255, 0.12), transparent 45%), #03050c;
+}
+
+.shell {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), inset 0 0 30px rgba(125, 212, 255, 0.12);
+}
+
+.logo {
+  letter-spacing: -0.1em;
+  text-shadow: 0 0 12px rgba(125, 212, 255, 0.6);
+}
+
+input,
+select,
+button {
+  font-family: "SFMono-Regular", "JetBrains Mono", "IBM Plex Mono", monospace;
+}
+
+.result-card {
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.result-card a {
+  text-shadow: 0 0 4px rgba(120, 247, 255, 0.6);
+}
+
+.result-description {
+  font-style: normal;
+}
+
+.key-status-panel {
+  background: rgba(7, 26, 47, 0.85);
+  border-color: rgba(125, 212, 255, 0.4);
+}
+
+.circle-action-button,
+.key-save-action {
+  background: rgba(10, 108, 253, 0.95);
+  border-color: rgba(10, 108, 253, 0.95);
+}
+
+.circle-action-button.css-override-clear {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.result-url {
+  color: #a7ffc1;
+}
