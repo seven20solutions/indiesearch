@@ -399,8 +399,8 @@
           <label class="label" for="api-key">Add your key here</label>
           <div class="provider-row">
             <select id="provider-select" aria-label="Choose search provider">
-              <option value="exa">Exa.ai</option>
               <option value="serper">Serper Search</option>
+              <option value="exa">Exa.ai (localhost only)</option>
             </select>
             <span class="provider-note" id="provider-note">Exa full results</span>
           </div>
@@ -463,7 +463,7 @@
     </div>
     <script>
       const maxResults = 10;
-      const defaultProviderId = "exa";
+      const defaultProviderId = "serper";
       const providerConfigs = {
         exa: {
           label: "Exa.ai",

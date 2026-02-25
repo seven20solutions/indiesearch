@@ -2,13 +2,19 @@
 
 ![Indie Search hero](./screenshot.png)
 
-Indie Search is a static, BYO key front end for Exa that nods to early-2000s search styling while adding modern conveniences like country-aware requests, keyboard navigation, and theme controls. It stores your key and preferences in the browser, calls Exa via `fetch`, and renders up to 10 results as blue titles/green URLs with descriptions. The provider dropdown can switch between Exa.ai (full search results) and Serper Search (browser-friendly GET that requires its own API key). A live demo is hosted at https://indie-search.statichost.page/ (note: the demo can’t access your Exa/Serper keys, so searches only work when you run the app locally with your own keys).
+Indie Search is a static, BYO key front end for Exa that nods to early-2000s search styling while adding modern conveniences like country-aware requests, keyboard navigation, and theme controls. It stores your key and preferences in the browser, calls Exa via `fetch`, and renders up to 10 results as blue titles/green URLs with descriptions. When you run locally you can use both Exa.ai and Serper Search; the hosted demo at https://indie-search.statichost.page/ only lets Serper run (because that’s the provider exposed there). A live demo can’t access your Exa/Serper keys, so searches only work when you run the app locally with your own keys.
 
 ## Requirements
 
-- **Exa.ai API key**: The app talks directly to Exa, so you must grab an API key from https://dashboard.exa.ai/api-keys and paste it into the form before searching.
+- **Exa.ai API key**: The app talks directly to Exa, so you must grab an API key from https://dashboard.exa.ai/api-keys and paste it into the form before searching (only available when you run locally).
+- **Serper Search API key**: Serper’s REST API at https://google.serper.dev/search requires an API key (sent as the `apiKey` query parameter).
 - **Serper Search API key** (OPTIONAL): Serper’s REST API at https://serper.dev/ requires an API key (sent as the `apiKey` query parameter).
 - **Static hosting/local server**: Browsers block local files from running the script, which is why you need to serve `index.html` via a static host or local server (see the Running locally section below).
+
+## Usage options
+
+1. **Run locally** (`python3 -m http.server 8000`, `php -S localhost:8000`, etc.). This gives you access to both providers: the dropdown defaults to Serper Search but you can switch to Exa.ai (labeled “Exa.ai (localhost only)”) and keep each key saved in the UI.
+2. **Hosted demo** at https://indie-search.statichost.page/. The page is already wired to Serper Search, so select Serper before running a query and supply your API key; Exa isn’t available there because the browser-hosted demo can’t reach your local Exa key.
 
 ## Running locally
 
@@ -23,7 +29,7 @@ Because the app is entirely static, your Exa API key and country choice never le
 
 - **BYO key panel**: Enter and save your Exa API key once; the form collapses and keeps a “Change key” toggle for updates.
 - **Country selector**: Choose your country and Exa receives it as `userLocation` plus the `numResults` parameter so results align with your locale.
-- **Provider switcher**: Swap between Exa.ai (full searches) and Serper Search (keyed GET requests to Serper’s public endpoint). The UI saves the key for whichever provider you select so you can flip back and forth without retyping it.
+- **Provider switcher**: Swap between Exa.ai (localhost only, full results) and Serper Search (browser-friendly keyed GET). Each provider saves its own key so the dropdown stays ready whenever you switch.
 - **Retro interface**: A serif “Indie Search” wordmark, centered shell, pastel result cards, blue titles, and green URLs echo the nostalgia of early search engines.
 - **Keyboard hotkeys**: `/` focuses search, `Ctrl+K` toggles the key panel, `↑/↓` or `j/k` highlight results, and Enter opens the highlighted link.
 - **Theme switcher**: Pick light, dark, or “system” (follows `prefers-color-scheme`) with pill buttons; the selection is saved for future visits.
