@@ -33,8 +33,8 @@ Required to use: https://indie-search.com/
      
 Sign up for a free API and get free credits to start searching today.
  
-- No credit card required. 
-- Minimal signup information required. 
+- No credit card required to sign up. 
+- Minimal signup information required (name, email, password). 
 - Search log can be anonomised for privacy.
 
 Sign up here: https://serper.dev
@@ -67,22 +67,21 @@ To use all the Search Index providers, you should self host the index.html file.
 
 ### How to host it
 
-1. **Run locally** (`python3 -m http.server 8000`, `php -S localhost:8000`, etc.). This gives you access to both providers: the dropdown defaults to Serper Search but you can switch to Exa.ai (labeled “Exa.ai (localhost only)”) and keep each key saved in the UI.
+1. **Run locally** (`python3 -m http.server 8000`, `php -S localhost:8000`, etc.). This gives you access to both providers: the dropdown defaults to Serper Search but you can switch to Exa.ai and keep each key saved in the UI.
 
 Need more help? 
 
-Ask DuckDuckGo AI: https://duck.ai/chat?ia=chat&duckai=1
+Ask DuckDuckGo AI "How do I run a web server on my computer": https://duck.ai/chat?ia=chat&duckai=1
 
 ## Key Storage
 
-Because the app is entirely static, your API keys and country choice never leave your computer—they are held in `localStorage`. If you are on a shared computer, we don't recommend this as other people can potentially find your API keys.
+Because the app is entirely static, your API keys and country choice never leave your computer as they are held in `localStorage`. If you are on a "shared computer", we don't recommend using https://indie-search.com/ as other people can potentially find your API keys.
 
 ## All Features
 
-- **BYO key panel**: Enter and save your Exa API key once; the form collapses and keeps a “Change key” toggle for updates.
-- **Country selector**: Choose your country and Exa receives it as `userLocation` plus the `numResults` parameter so results align with your locale.
-- **Provider switcher**: Serper Search is the default provider and runs everywhere; switch to Exa.ai (labeled “Exa.ai (localhost only)”) whenever you run the app locally so you get full Exa results. Each provider saves its own key so the dropdown stays ready whenever you switch.
-- **Retro interface**: A serif “Indie Search” wordmark, centered shell, pastel result cards, blue titles, and green URLs echo the nostalgia of early search engines.
+- **Country selector**: Choose your country (happy to add more, please reach out).
+- **Provider switcher**: Serper Search is the default provider and runs everywhere; switch to Exa.ai  whenever you run the app locally so you get full Exa results. Each provider saves its own key so the dropdown stays ready whenever you switch.
+- **Retro interface**: Rewind back to the best days of the web.
 - **Keyboard hotkeys**: `/` focuses search, `Ctrl+K` toggles the key panel, `↑/↓` or `j/k` highlight results, and Enter opens the highlighted link.
 - **Theme switcher**: Pick light, dark, or “system” (follows `prefers-color-scheme`) with pill buttons; the selection is saved for future visits.
 - **Query permalink**: The `?s=` parameter in the URL mirrors your query so you can bookmark or share searches, and loading such a URL auto-runs the query once a key is stored.
