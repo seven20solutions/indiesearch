@@ -449,7 +449,10 @@
 
       const normalizeText = (value) =>
         typeof value === "string"
-          ? value.replace(/\s+/g, " ").trim()
+          ? value
+              .replace(/[\*`_#\[\]]/g, "")
+              .replace(/\s+/g, " ")
+              .trim()
           : "";
 
       const themeStorageKey = "indieSearchTheme";
