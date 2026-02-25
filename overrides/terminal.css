@@ -35,6 +35,10 @@ body {
   color: #fff;
 }
 
+.logo span {
+  color: #fff;
+}
+
 input,
 select,
 button {
