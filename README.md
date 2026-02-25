@@ -7,7 +7,7 @@ Indie Search is a static, BYO key front end for Exa that nods to early-2000s sea
 ## Requirements
 
 - **Exa.ai API key**: The app talks directly to Exa, so you must grab an API key from https://dashboard.exa.ai/api-keys and paste it into the form before searching.
-- **Serper Search API key**: Serper’s REST API at https://google.serper.dev/search requires an API key (sent as the `apiKey` query parameter).
+- **Serper Search API key** (OPTIONAL): Serper’s REST API at https://serper.dev/ requires an API key (sent as the `apiKey` query parameter).
 - **Static hosting/local server**: Browsers block local files from running the script, which is why you need to serve `index.html` via a static host or local server (see the Running locally section below).
 
 ## Running locally
