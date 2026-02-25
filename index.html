@@ -323,18 +323,18 @@
             Supply your own Exa API key, store it locally, and run searches just like a
             cozy, commitment-friendly search engine.
           </p>
-          <div class="api-card">
+          <form class="api-card" id="key-form">
             <label for="api-key">Add your key here</label>
             <div class="field-row">
               <input id="api-key" type="password" autocomplete="off" placeholder="sk-***" />
-              <button id="save-key" type="button">Save key</button>
+              <button id="save-key" type="submit">Save key</button>
             </div>
             <p class="key-status" id="key-status">Key not saved yet.</p>
             <p class="key-note">
               This page stores your key in the browser’s local storage so that the key never leaves your
               machine unless you share it. You can delete it at any time or clear storage to reset access.
             </p>
-          </div>
+          </form>
         </section>
         <section class="panel search-panel">
           <form class="search-input" id="search-form">
@@ -360,6 +360,7 @@
 
       const keyInput = document.getElementById("api-key");
       const saveKeyButton = document.getElementById("save-key");
+      const keyForm = document.getElementById("key-form");
       const keyStatus = document.getElementById("key-status");
       const searchForm = document.getElementById("search-form");
       const searchInput = document.getElementById("search-input");
@@ -566,17 +567,11 @@
         loadKeyFromStorage();
         updateKeyStatus();
 
-        saveKeyButton.addEventListener("click", () => {
+        keyForm.addEventListener("submit", (event) => {
+          event.preventDefault();
           saveKey();
           if (searchInput.value.trim()) {
             runSearch(searchInput.value.trim());
-          }
-        });
-
-        keyInput.addEventListener("keypress", (event) => {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            saveKeyButton.click();
           }
         });
 
