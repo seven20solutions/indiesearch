@@ -1,8 +1,13 @@
 # Indie Search
 
-Indie Search is a static, BYO key front end for Exa that mimics early-2000s Google styling while adding modern conveniences like country-aware requests, keyboard navigation, and theme controls. It stores your key and preferences in the browser, calls Exa via `fetch`, and renders up to 10 results as blue titles/green URLs with descriptions.
+Indie Search is a static, BYO key front end for Exa that nods to early-2000s search styling while adding modern conveniences like country-aware requests, keyboard navigation, and theme controls. It stores your key and preferences in the browser, calls Exa via `fetch`, and renders up to 10 results as blue titles/green URLs with descriptions.
 
-## Running locally
+## Requirements
+
+- **Exa.ai API key**: The app talks directly to Exa, so you must grab an API key from https://dashboard.exa.ai/api-keys and paste it into the form before searching.
+- **Static hosting/local server**: Browsers block local files from running the script, which is why you need to serve `index.html` via a static host or local server (see the Running locally section below).
+
+# Running locally
 
 You need to serve the files from a local web server so the browser can load `index.html` and execute the JavaScript. Here are two easy commands from the repo root:
 
