@@ -31,6 +31,8 @@ body {
 .logo {
   letter-spacing: -0.1em;
   text-shadow: 0 0 12px rgba(125, 212, 255, 0.6);
+  font-family: "SFMono-Regular", "JetBrains Mono", "IBM Plex Mono", monospace;
+  color: #fff;
 }
 
 input,
