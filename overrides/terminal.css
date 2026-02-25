@@ -39,6 +39,13 @@ body {
   color: #fff !important;
 }
 
+.logo .blue,
+.logo .red,
+.logo .yellow,
+.logo .green {
+  color: #fff !important;
+}
+
 input,
 select,
 button {
