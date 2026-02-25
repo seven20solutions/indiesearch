@@ -459,7 +459,7 @@
           <p class="result-place-holder">Awaiting your first search.</p>
         </div>
       </section>
-      <p class="footer-note">Results provided by Exa.ai.</p>
+      <p class="footer-note" id="footer-note">Results provided by Exa.ai.</p>
     </div>
     <script>
       const maxResults = 10;
@@ -600,6 +600,13 @@
       const resultsList = document.getElementById("results-list");
       const searchButton = document.getElementById("search-button");
       const statusMessage = document.getElementById("status-message");
+      const footerNote = document.getElementById("footer-note");
+      const countryNames = countrySelect
+        ? Array.from(countrySelect.options).reduce((acc, option) => {
+            acc[option.value] = option.textContent;
+            return acc;
+          }, {})
+        : {};
 
       const normalizeText = (value) =>
         typeof value === "string"
@@ -707,6 +714,7 @@
         }
         updateKeyVisibility(forceCollapse);
         updateKeyFieldVisibility();
+        updateFooter();
       }
 
       function updateKeyFieldVisibility() {
@@ -764,6 +772,25 @@
         } catch (error) {
           console.warn("Unable to store country", error);
         }
+        updateFooter();
+      }
+
+      function getCountryDisplayName(code) {
+        if (!code) {
+          return "";
+        }
+        return countryNames[code] || code.toUpperCase();
+      }
+
+      function updateFooter() {
+        if (!footerNote) {
+          return;
+        }
+        const provider = getProviderConfig();
+        const countryName = getCountryDisplayName(currentCountry);
+        footerNote.textContent = `Results provided by ${provider.label}${
+          countryName ? ` (${countryName})` : ""
+        }.`;
       }
 
       function loadThemeFromStorage() {
@@ -1026,6 +1053,7 @@
             applyKeyPanelState();
             loadKeyFromStorage();
             updateKeyStatus(false);
+            updateFooter();
             setStatus(`Switched to ${getProviderConfig().label}.`);
           });
         }

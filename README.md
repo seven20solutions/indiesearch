@@ -23,7 +23,7 @@ Because the app is entirely static, your Exa API key and country choice never le
 
 - **BYO key panel**: Enter and save your Exa API key once; the form collapses and keeps a “Change key” toggle for updates.
 - **Country selector**: Choose your country and Exa receives it as `userLocation` plus the `numResults` parameter so results align with your locale.
-- **Provider switcher**: Swap between Exa.ai (full searches) and Serper Search (keyed GET requests to Serper’s public endpoint).
+- **Provider switcher**: Swap between Exa.ai (full searches) and Serper Search (keyed GET requests to Serper’s public endpoint). The UI saves the key for whichever provider you select so you can flip back and forth without retyping it.
 - **Retro interface**: A serif “Indie Search” wordmark, centered shell, pastel result cards, blue titles, and green URLs echo the nostalgia of early search engines.
 - **Keyboard hotkeys**: `/` focuses search, `Ctrl+K` toggles the key panel, `↑/↓` or `j/k` highlight results, and Enter opens the highlighted link.
 - **Theme switcher**: Pick light, dark, or “system” (follows `prefers-color-scheme`) with pill buttons; the selection is saved for future visits.
