@@ -2,34 +2,86 @@
 
 ![Indie Search hero](./screenshot.png)
 
-Indie Search is a static, BYO key front end for Exa that nods to early-2000s search styling while adding modern conveniences like country-aware requests, keyboard navigation, and theme controls. It stores your key and preferences in the browser, calls Exa via `fetch`, and renders up to 10 results as blue titles/green URLs with descriptions. When you run locally you can use both Exa.ai and Serper Search; the hosted demo at https://indie-search.statichost.page/ only lets Serper run (because that’s the provider exposed there). A live demo can’t access your Exa/Serper keys, so searches only work when you run the app locally with your own keys.
+The independent, open source, search tool you've been looking for.
 
-## Requirements
+Indie Search is a "drop in replacement"" for your regular search engine.
 
-- **Exa.ai API key**: The app talks directly to Exa, so you must grab an API key from https://dashboard.exa.ai/api-keys and paste it into the form before searching (only available when you run locally).
-- **Serper Search API key**: Serper’s REST API at https://google.serper.dev/search requires an API key (sent as the `apiKey` query parameter).
-- **Serper Search API key** (OPTIONAL): Serper’s REST API at https://serper.dev/ requires an API key (sent as the `apiKey` query parameter).
-- **Static hosting/local server**: Browsers block local files from running the script, which is why you need to serve `index.html` via a static host or local server (see the Running locally section below).
+It gives you 10 blue links which points to the pages you want. That's it. 
 
-## Usage options
+No ads. No products. No tracking (from us anway). No accounts.
+
+## How it works
+
+Indie Search is made to "connect" to a search index provider of your choice. 
+
+Once you're connected, you can personalise the results for your country and you're set to go!
+
+## Two ways to search
+
+You can either "self host" Indie Search (great for desktop users) or use https://indie-search.com/ (best for mobile users).
+
+To start using https://indie-search.com/, get a Serper account. Details below.
+
+To self host, see instructions below.
+
+
+## Search Index providers
+We hope to add more providers in future. Below are the current options.
+
+### Serper Search:
+Required to use: https://indie-search.com/    
+     
+Sign up for a free API and get free credits to start searching today.
+ 
+- No credit card required. 
+- Minimal signup information required. 
+- Search log can be anonomised for privacy.
+
+Sign up here: https://serper.dev
+
+### Exa.ai Search:
+Optional. Only works when self hosting (via localhost).    
+    
+- Sign up for a free 
+- No credit card required
+
+Sign up here: https://dashboard.exa.ai/api-keys
+
+NOTE: We are not affiliated with any providers. 
+
+
+## Our contribution to the Indie Web
+
+The Indie Web is built on a [handful of principles](https://indieweb.org/principles) which we think will make the web a better place.
+
+The search engine is at the heart of how most people experience the web. 
+
+Indie Search is about give YOU control over your search engine.
+
+We give you the code and the knowledge to host it yourself. You're in control again. 
+
+
+## Self Hosting
+
+To use all the Search Index providers, you should self host the index.html file. Yes, just the one file.
+
+### How to host it
 
 1. **Run locally** (`python3 -m http.server 8000`, `php -S localhost:8000`, etc.). This gives you access to both providers: the dropdown defaults to Serper Search but you can switch to Exa.ai (labeled “Exa.ai (localhost only)”) and keep each key saved in the UI.
-2. **Hosted demo** at https://indie-search.statichost.page/. The page is already wired to Serper Search, so select Serper before running a query and supply your API key; Exa isn’t available there because the browser-hosted demo can’t reach your local Exa key.
 
-## Running locally
+Need more help? 
 
-You need to serve the files from a local web server so the browser can load `index.html` and execute the JavaScript. Here are two easy commands from the repo root:
+Ask DuckDuckGo AI: https://duck.ai/chat?ia=chat&duckai=1
 
-- **Python 3**: `python3 -m http.server 8000` (or `python -m http.server 8000` on systems where `python` is mapped to Python 3). Open `http://localhost:8000/?s=your+query`.
-- **PHP built-in server** (if PHP is installed): `php -S localhost:8000`. Navigate to the same URL once the server prints the listening message.
+## Key Storage
 
-Because the app is entirely static, your Exa API key and country choice never leave your computer—they are held in `localStorage`.
+Because the app is entirely static, your API keys and country choice never leave your computer—they are held in `localStorage`. If you are on a shared computer, we don't recommend this as other people can potentially find your API keys.
 
-## Features
+## All Features
 
 - **BYO key panel**: Enter and save your Exa API key once; the form collapses and keeps a “Change key” toggle for updates.
 - **Country selector**: Choose your country and Exa receives it as `userLocation` plus the `numResults` parameter so results align with your locale.
-- **Provider switcher**: Swap between Exa.ai (localhost only, full results) and Serper Search (browser-friendly keyed GET). Each provider saves its own key so the dropdown stays ready whenever you switch.
+- **Provider switcher**: Serper Search is the default provider and runs everywhere; switch to Exa.ai (labeled “Exa.ai (localhost only)”) whenever you run the app locally so you get full Exa results. Each provider saves its own key so the dropdown stays ready whenever you switch.
 - **Retro interface**: A serif “Indie Search” wordmark, centered shell, pastel result cards, blue titles, and green URLs echo the nostalgia of early search engines.
 - **Keyboard hotkeys**: `/` focuses search, `Ctrl+K` toggles the key panel, `↑/↓` or `j/k` highlight results, and Enter opens the highlighted link.
 - **Theme switcher**: Pick light, dark, or “system” (follows `prefers-color-scheme`) with pill buttons; the selection is saved for future visits.
@@ -41,4 +93,7 @@ Because the app is entirely static, your Exa API key and country choice never le
 2. In your browser’s search engine settings add a custom engine pointing to `http://localhost:8000/?s=%s` (use `%s` or `{searchTerms}` depending on the browser).
 3. Set that custom engine as the default or assign it a shortcut (for example, type `i` + space to fire Indie Search).
 
-Every search still happens locally, so your API key stays inside the browser.
+
+Need more help? 
+
+Ask DuckDuckGo AI: https://duck.ai/chat?ia=chat&duckai=1

@@ -138,6 +138,12 @@
         gap: 0.8rem;
       }
 
+      .field-row button,
+      .search-input button {
+        min-height: 2.8rem;
+        align-self: stretch;
+      }
+
       .key-entry-row.hidden {
         display: none;
       }
@@ -196,6 +202,11 @@
       .provider-note {
         font-size: 0.78rem;
         color: var(--subtext);
+      }
+
+      .provider-note a {
+        color: var(--subtext);
+        text-decoration: underline;
       }
 
       .country-picker {
@@ -366,7 +377,12 @@
         text-align: center;
       }
 
-      @media (max-width: 600px) {
+      .footer-note a {
+        color: #777;
+        text-decoration: underline;
+      }
+
+      @media (max-width: 800px) {
         .shell {
           padding: 1.5rem;
         }
@@ -374,6 +390,20 @@
         .field-row,
         .search-input {
           flex-direction: column;
+        }
+
+        .logo {
+          font-size: 2.4rem;
+          letter-spacing: 0;
+        }
+
+        .logo span {
+          display: inline-block;
+          line-height: 1.2;
+        }
+
+        .hotkeys-note {
+          display: none;
         }
       }
     </style>
@@ -463,6 +493,7 @@
     </div>
     <script>
       const maxResults = 10;
+      const sourceCodeUrl = "https://github.com/seven20solutions/indiesearch.git";
       const defaultProviderId = "serper";
       const providerConfigs = {
         exa: {
@@ -514,7 +545,7 @@
         serper: {
           label: "Serper Search",
           storageKey: "indieSearchKey-serper",
-          note: "Requires a Serper API key (apiKey query parameter).",
+          note: "Requires a free <a href=\"https://serper.dev/\" target=\"_blank\" rel=\"noreferrer\">Serper API key</a>.",
           requiresKey: true,
           async search(query, key) {
             const params = new URLSearchParams({
@@ -565,7 +596,7 @@
 
       function setProviderNote() {
         if (providerNote) {
-          providerNote.textContent = getProviderConfig().note;
+          providerNote.innerHTML = getProviderConfig().note;
         }
       }
 
@@ -788,9 +819,11 @@
         }
         const provider = getProviderConfig();
         const countryName = getCountryDisplayName(currentCountry);
-        footerNote.textContent = `Results provided by ${provider.label}${
+        const providerText = `Results provided by ${provider.label}${
           countryName ? ` (${countryName})` : ""
         }.`;
+        const link = `<a href="${sourceCodeUrl}" target="_blank" rel="noopener">Source Code</a>`;
+        footerNote.innerHTML = `${providerText} ${link}`;
       }
 
       function loadThemeFromStorage() {
