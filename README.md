@@ -96,3 +96,18 @@ Because the app is entirely static, your API keys and country choice never leave
 Need more help? 
 
 Ask DuckDuckGo AI: https://duck.ai/chat?ia=chat&duckai=1
+
+## Customise the appearance
+
+Want to change how Indie Search looks? Just make your own CSS to override it!
+
+Example: 
+    
+![Indie Search terminal css override](./overrides/terminal.png)
+    
+Go into Settings and set the override to: 
+https://raw.githubusercontent.com/seven20solutions/indiesearch/refs/heads/main/overrides/terminal.css
+    
+    
+    
+    
