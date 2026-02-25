@@ -2,7 +2,7 @@
 
 ![Indie Search hero](./screenshot.png)
 
-Indie Search is a static, BYO key front end for Exa that nods to early-2000s search styling while adding modern conveniences like country-aware requests, keyboard navigation, and theme controls. It stores your key and preferences in the browser, calls Exa via `fetch`, and renders up to 10 results as blue titles/green URLs with descriptions.
+Indie Search is a static, BYO key front end for Exa that nods to early-2000s search styling while adding modern conveniences like country-aware requests, keyboard navigation, and theme controls. It stores your key and preferences in the browser, calls Exa via `fetch`, and renders up to 10 results as blue titles/green URLs with descriptions. A live demo is hosted at https://indie-search.statichost.page/ (note: the demo can’t access your Exa key, so searches only work when you run the app locally with your own key).
 
 ## Requirements
 
