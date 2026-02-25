@@ -11,7 +11,7 @@
     />
     <style>
       :root {
-        font-family: "Georgia", "Times New Roman", serif;
+       font-family: "Georgia", "Times New Roman", serif;
         --body-bg: #f7f7f7;
         --shell-bg: #fff;
         --border-color: #ddd;
@@ -29,6 +29,7 @@
         --panel-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         --button-bg: #1a73e8;
         --button-border: #1a73e8;
+        --control-panel-width: min(640px, 100%);
       }
 
       html[data-theme="dark"] {
@@ -139,6 +140,10 @@
         gap: 0.8rem;
       }
 
+      #api-key {
+        max-width: 85%;
+      }
+
       .field-row button,
       .search-input button {
         min-height: 2.8rem;
@@ -184,6 +189,118 @@
         line-height: 1.4;
       }
 
+      .key-status-panel {
+        margin-top: 0.65rem;
+        margin-bottom: 12px;
+        padding: 0.75rem 0.9rem;
+        border-radius: 8px;
+        background: rgba(26, 115, 232, 0.08);
+        border: 1px solid rgba(26, 115, 232, 0.25);
+      }
+
+      .key-status-panel .key-status {
+        margin: 0;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      .settings-row {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-top: 0.8rem;
+        width: 100%;
+        max-width: var(--control-panel-width);
+        margin: 0 0 0.8rem;
+        justify-content: flex-start;
+      }
+
+      .css-override-block {
+        flex: 1 1 280px;
+        min-width: 0;
+        width: 100%;
+        align-self: flex-start;
+      }
+
+      .css-override-field {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .css-override-field input {
+        flex: 1 1 220px;
+        min-width: 0;
+      }
+
+      #css-override-url {
+        max-width: 85%;
+      }
+
+      .css-override-actions {
+        display: flex;
+        gap: 0.35rem;
+        align-items: center;
+      }
+
+      .circle-action-button {
+        width: 2.9rem;
+        height: 2.9rem;
+        border-radius: 999px;
+        border: 1px solid var(--button-border);
+        background: var(--button-bg);
+        color: #fff;
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+        transition: background 0.2s ease, border-color 0.2s ease;
+      }
+
+      .circle-action-button:hover:not(:disabled) {
+        background: #1659c3;
+      }
+
+      .circle-action-button.css-override-clear {
+        background: transparent;
+        border-color: #cfcfcf;
+        color: var(--text-color);
+      }
+
+      .circle-action-button.css-override-clear:hover:not(:disabled) {
+        border-color: var(--link-color);
+        color: var(--link-color);
+        background: rgba(26, 115, 232, 0.04);
+      }
+
+      .circle-action-button.css-override-clear:disabled {
+        border-color: var(--muted);
+        color: var(--muted);
+        cursor: not-allowed;
+        background: transparent;
+      }
+
+      .css-override-status {
+        margin-top: 0.35rem;
+        font-size: 0.8rem;
+        color: var(--muted);
+        max-width: 580px;
+      }
+
+      .css-override-status[data-state="error"] {
+        color: #d93025;
+      }
+
+      .css-override-status[data-state="loading"] {
+        color: var(--subtext);
+      }
+
+
       .provider-row {
         display: flex;
         gap: 0.6rem;
@@ -191,10 +308,38 @@
         margin-bottom: 0.75rem;
       }
 
-      .provider-row select {
-        border-radius: 6px;
+      .provider-key-row {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: var(--control-panel-width);
+        margin: 0 0 0.6rem;
+        justify-content: flex-start;
+      }
+
+      .provider-key-row .provider-col {
+        flex: 1 1 120px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .provider-key-row form {
+        flex: 1 1 320px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .select-control {
+        width: 205px;
+        border-radius: 5px;
         border: 1px solid #cfcfcf;
-        padding: 0.6rem 0.9rem;
+        padding: 0.7rem 0.85rem;
         font-size: 0.95rem;
         background: #fff;
         font-family: inherit;
@@ -211,19 +356,11 @@
       }
 
       .country-picker {
-        margin-top: 0.8rem;
+        margin-top: 0;
         display: flex;
         flex-direction: column;
         gap: 0.35rem;
-      }
-
-      .country-picker select {
-        width: 220px;
-        border-radius: 5px;
-        border: 1px solid #cfcfcf;
-        padding: 0.7rem 0.85rem;
-        font-size: 0.95rem;
-        background: #fff;
+        align-self: flex-start;
       }
 
       .key-panel {
@@ -363,6 +500,11 @@
         font-size: 0.82rem;
         color: var(--url-color);
         font-family: "Courier New", Courier, monospace;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        width: 100%;
       }
 
       .result-place-holder {
@@ -393,6 +535,18 @@
           flex-direction: column;
         }
 
+        .field-row.key-entry-row {
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+        }
+
+        .field-row.css-override-field {
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+        }
+
         .logo {
         font-size: 2.1rem;
           letter-spacing: 0;
@@ -408,6 +562,7 @@
         }
       }
     </style>
+    <style id="user-css-overrides"></style>
   </head>
   <body>
     <div class="shell">
@@ -427,36 +582,82 @@
       </p>
       <section class="section key-panel" id="key-panel">
         <div class="key-panel-content" id="key-panel-content">
-          <label class="label" for="api-key">Add your key here</label>
-          <div class="provider-row">
-            <select id="provider-select" aria-label="Choose search provider">
-              <option value="serper">Serper Search</option>
-              <option value="exa">Exa.ai (localhost only)</option>
-            </select>
-            <span class="provider-note" id="provider-note">Exa full results</span>
+          <div class="key-status-panel" aria-live="polite">
+            <p class="key-status" id="key-status">Key not saved yet.</p>
+            <p class="key-note">
+              This page keeps your key in local storage so it never leaves your browser unless you share it.
+              Clear storage to remove it.
+            </p>
           </div>
-          <form id="key-form">
-            <div class="field-row key-entry-row">
-              <input id="api-key" type="password" autocomplete="off" placeholder="sk-***" />
-              <button id="save-key" type="submit">Save</button>
+          <div class="provider-key-row">
+            <div class="provider-col">
+              <div class="provider-row">
+                <select id="provider-select" class="select-control" aria-label="Choose search provider">
+                  <option value="serper">Serper Search</option>
+                  <option value="exa">Exa.ai (localhost only)</option>
+                </select>
+              </div>
+              <span class="provider-note" id="provider-note">Exa full results</span>
             </div>
-          </form>
-          <p class="key-status" id="key-status">Key not saved yet.</p>
-          <p class="key-note">
-            This page keeps your key in local storage so it never leaves your browser unless you share it.
-            Clear storage to remove it.
-          </p>
-          <div class="country-picker">
-            <label for="country-select">Your country</label>
-            <select id="country-select" aria-label="Select country">
-              <option value="us">United States</option>
-              <option value="ca">Canada</option>
-              <option value="gb">United Kingdom</option>
-              <option value="au">Australia</option>
-              <option value="de">Germany</option>
-              <option value="fr">France</option>
-              <option value="jp">Japan</option>
-            </select>
+            <form id="key-form">
+              <div class="field-row key-entry-row">
+                <input id="api-key" type="password" autocomplete="off" placeholder="Required: Enter API key" />
+                <button
+                  id="save-key"
+                  type="submit"
+                  aria-label="Save API key"
+                  title="Save API key"
+                  class="circle-action-button"
+                >
+                  ✓
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="settings-row">
+            <div class="country-picker">
+              <select id="country-select" class="select-control" aria-label="Select country">
+                <option value="us">United States</option>
+                <option value="ca">Canada</option>
+                <option value="gb">United Kingdom</option>
+                <option value="au">Australia</option>
+                <option value="de">Germany</option>
+                <option value="fr">France</option>
+                <option value="jp">Japan</option>
+              </select>
+            </div>
+            <div class="css-override-block">
+              <div class="field-row css-override-field">
+                <input
+                  id="css-override-url"
+                  type="url"
+                  autocomplete="off"
+                  placeholder="Custom stylesheet URL (optional)"
+                />
+                <div class="css-override-actions">
+                  <button
+                    id="save-css-override"
+                    type="button"
+                    class="circle-action-button"
+                    aria-label="Apply custom stylesheet"
+                  >
+                    ✓
+                  </button>
+                  <button
+                    id="clear-css-override"
+                    type="button"
+                    class="circle-action-button css-override-clear"
+                    disabled
+                    aria-label="Remove custom stylesheet"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+              <p id="css-override-status" class="key-note css-override-status">
+                Paste a stylesheet URL (CORS-enabled) to override the look; saved locally for next time.
+              </p>
+            </div>
           </div>
         </div>
         <button
@@ -465,7 +666,7 @@
           type="button"
           aria-expanded="false"
         >
-          Change key
+        Settings
         </button>
       </section>
       <section class="section search-panel">
@@ -625,6 +826,7 @@
       const providerNote = document.getElementById("provider-note");
       const countryStorageKey = "indieSearchCountry";
       const providerStorageKey = "indieSearchProvider";
+      const customCssStorageKey = "indieSearchCustomCssUrl";
       const keyEntryRow = document.querySelector(".key-entry-row");
       let keyPanelCollapsed = false;
       const searchForm = document.getElementById("search-form");
@@ -633,6 +835,11 @@
       const searchButton = document.getElementById("search-button");
       const statusMessage = document.getElementById("status-message");
       const footerNote = document.getElementById("footer-note");
+      const cssOverrideInput = document.getElementById("css-override-url");
+      const cssOverrideSave = document.getElementById("save-css-override");
+      const cssOverrideClear = document.getElementById("clear-css-override");
+      const cssOverrideStatus = document.getElementById("css-override-status");
+      const customCssStyle = document.getElementById("user-css-overrides");
       const countryNames = countrySelect
         ? Array.from(countrySelect.options).reduce((acc, option) => {
             acc[option.value] = option.textContent;
@@ -714,6 +921,7 @@
       let currentResults = [];
       let highlightedIndex = -1;
       let currentCountry = "us";
+      let customCssUrl = null;
 
       function setStatus(message, state) {
         statusMessage.textContent = message;
@@ -827,6 +1035,100 @@
         footerNote.innerHTML = `${providerText} ${link}`;
       }
 
+      function setCssOverrideStatus(message, state) {
+        if (!cssOverrideStatus) {
+          return;
+        }
+        cssOverrideStatus.textContent = message;
+        if (state) {
+          cssOverrideStatus.setAttribute("data-state", state);
+        } else {
+          cssOverrideStatus.removeAttribute("data-state");
+        }
+      }
+
+      function updateCssOverrideControls() {
+        if (!cssOverrideClear) {
+          return;
+        }
+        cssOverrideClear.disabled = !customCssUrl;
+      }
+
+      function applyCustomCssText(cssText) {
+        if (customCssStyle) {
+          customCssStyle.textContent = cssText || "";
+        }
+      }
+
+      async function loadCustomCss(url, { persist = false } = {}) {
+        if (!url) {
+          setCssOverrideStatus("Enter a stylesheet URL to apply.", "error");
+          return false;
+        }
+        setCssOverrideStatus("Loading custom stylesheet…", "loading");
+        try {
+          const response = await fetch(url, { mode: "cors" });
+          if (!response.ok) {
+            throw new Error(`Request failed (${response.status})`);
+          }
+          const cssText = await response.text();
+          applyCustomCssText(cssText);
+          customCssUrl = url;
+          if (persist) {
+            try {
+              localStorage.setItem(customCssStorageKey, url);
+            } catch (storageError) {
+              console.warn("Unable to persist custom CSS URL", storageError);
+            }
+          }
+          setCssOverrideStatus("Custom stylesheet applied.");
+          return true;
+        } catch (error) {
+          console.error("Custom CSS override failed", error);
+          setCssOverrideStatus(
+            `Unable to load custom CSS${error?.message ? `: ${error.message}` : ""}`,
+            "error"
+          );
+          return false;
+        } finally {
+          updateCssOverrideControls();
+        }
+      }
+
+      function clearCustomCssOverride() {
+        applyCustomCssText("");
+        customCssUrl = null;
+        try {
+          localStorage.removeItem(customCssStorageKey);
+        } catch (storageError) {
+          console.warn("Unable to clear custom CSS URL", storageError);
+        }
+        setCssOverrideStatus("Custom stylesheet removed.");
+        if (cssOverrideInput) {
+          cssOverrideInput.value = "";
+        }
+        updateCssOverrideControls();
+      }
+
+      async function restoreCustomCssFromStorage() {
+        try {
+          const storedUrl = localStorage.getItem(customCssStorageKey);
+          if (storedUrl && cssOverrideInput) {
+            cssOverrideInput.value = storedUrl;
+          }
+          if (storedUrl) {
+            await loadCustomCss(storedUrl);
+            return;
+          }
+          setCssOverrideStatus("Paste a stylesheet URL (CORS-enabled) to override the look.");
+        } catch (error) {
+          console.warn("Unable to restore custom stylesheet", error);
+          setCssOverrideStatus("Unable to load saved stylesheet.", "error");
+        } finally {
+          updateCssOverrideControls();
+        }
+      }
+
       function loadThemeFromStorage() {
         try {
           const stored = localStorage.getItem(themeStorageKey);
@@ -871,7 +1173,7 @@
         if (!toggleKeyPanel) {
           return;
         }
-        toggleKeyPanel.textContent = keyPanelCollapsed ? "Change key" : "Hide key section";
+        toggleKeyPanel.textContent = keyPanelCollapsed ? "Settings" : "Hide settings";
         toggleKeyPanel.setAttribute("aria-expanded", (!keyPanelCollapsed).toString());
       }
 
@@ -1109,6 +1411,23 @@
             updateThemeButtons(themeButtons);
           });
         });
+
+        if (cssOverrideSave) {
+          cssOverrideSave.addEventListener("click", async () => {
+            const url = cssOverrideInput?.value.trim();
+            if (!url) {
+              setCssOverrideStatus("Enter a stylesheet URL to apply.", "error");
+              return;
+            }
+            await loadCustomCss(url, { persist: true });
+          });
+        }
+
+        if (cssOverrideClear) {
+          cssOverrideClear.addEventListener("click", clearCustomCssOverride);
+        }
+
+        restoreCustomCssFromStorage();
 
         document.addEventListener("keydown", (event) => {
           const active = document.activeElement;

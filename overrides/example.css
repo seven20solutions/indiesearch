@@ -1,0 +1,40 @@
+:root {
+  --body-bg: #050a16;
+  --shell-bg: rgba(15, 23, 42, 0.95);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --text-color: #f8fafc;
+  --subtext: #d1d5db;
+  --muted: #9ca3af;
+  --hotkey-text: #cbd5f5;
+  --result-border: rgba(248, 113, 113, 0.25);
+  --result-bg: rgba(15, 23, 42, 0.7);
+  --result-highlight-bg: rgba(236, 72, 153, 0.15);
+  --result-highlight-border: rgba(236, 72, 153, 0.4);
+  --link-color: #f472b6;
+  --desc-color: #dfe4ff;
+  --url-color: #a5f3fc;
+  --panel-shadow: 0 30px 65px rgba(5, 0, 30, 0.75);
+  --button-bg: #ec4899;
+  --button-border: #ec4899;
+}
+
+body {
+  background: radial-gradient(circle at top, #1a1b2f, #050a16 70%);
+}
+
+.shell {
+  backdrop-filter: blur(12px);
+}
+
+.result-card {
+  border-color: rgba(236, 72, 153, 0.35);
+  box-shadow: 0 10px 30px rgba(236, 72, 153, 0.25);
+}
+
+.result-card a {
+  color: #fef3c7;
+}
+
+.css-override-status {
+  letter-spacing: 0.02em;
+}
