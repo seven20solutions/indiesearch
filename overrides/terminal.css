@@ -37,6 +37,8 @@ input,
 select,
 button {
   font-family: "SFMono-Regular", "JetBrains Mono", "IBM Plex Mono", monospace;
+  background: #000;
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 input,
@@ -61,7 +63,7 @@ select:focus {
   text-shadow: 0 0 4px rgba(120, 247, 255, 0.6);
   font-family: "SFMono-Regular", "JetBrains Mono", "IBM Plex Mono", monospace;
   letter-spacing: 0.02em;
-  color: #7af0ff;
+  color: #7cff5f;
 }
 
 .result-description {
