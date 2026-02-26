@@ -495,6 +495,12 @@
         font-style: italic;
       }
 
+      .result-description-date {
+        font-size: 0.82rem;
+        color: var(--muted);
+        font-style: normal;
+      }
+
       .result-url {
         margin: 0.25rem 0 0;
         font-size: 0.82rem;
@@ -695,6 +701,88 @@
     </div>
     <script>
       const maxResults = 10;
+      const muppetEasterEggResults = [
+        {
+          title: "Rowlf the Dog",
+          url: "https://muppets.example.com/rowlf",
+          description:
+            "Piano-playing sage who always keeps his cool, often dropping unexpected jazz wisdom.",
+          providerId: "serper",
+          date: "4 hours ago",
+        },
+        {
+          title: "Janice (Electric Mayhem)",
+          url: "https://muppets.example.com/janice",
+          description:
+            "Guitarist with a kaleidoscopic vocabulary and a Zen approach to improvised solos.",
+          providerId: "serper",
+          date: "5 hours ago",
+        },
+        {
+          title: "Zoot",
+          url: "https://muppets.example.com/zoot",
+          description:
+            "Tenor sax player whose riffs feel like breathy postcards from another galaxy.",
+          providerId: "serper",
+          date: "6 hours ago",
+        },
+        {
+          title: "Scooter",
+          url: "https://muppets.example.com/scooter",
+          description:
+            "Stage manager extraordinaire keeping the theatre running while slipping in quirky asides.",
+          providerId: "serper",
+          date: "7 hours ago",
+        },
+        {
+          title: "Beauregard",
+          url: "https://muppets.example.com/beauregard",
+          description:
+            "Lovable janitor whose deep southern drawl hides surprisingly philosophical musings.",
+          providerId: "serper",
+          date: "1 day ago",
+        },
+        {
+          title: "Sweetums",
+          url: "https://muppets.example.com/sweetums",
+          description:
+            "Gentle giant with a heart of gold, always ready to lull the crowd into a goofy grin.",
+          providerId: "serper",
+          date: "1 day ago",
+        },
+        {
+          title: "Bunsen Honeydew",
+          url: "https://muppets.example.com/bunsen",
+          description:
+            "Brilliant scientist whose lab experiments rival the unpredictable charm of his inventions.",
+          providerId: "serper",
+          date: "2 days ago",
+        },
+        {
+          title: "Beaker",
+          url: "https://muppets.example.com/beaker",
+          description:
+            "Emission-prone sidekick of Bunsen, sending ill-fated results into the stratosphere daily.",
+          providerId: "serper",
+          date: "2 days ago",
+        },
+        {
+          title: "Crazy Harry",
+          url: "https://muppets.example.com/crazy-harry",
+          description:
+            "Pyrotechnic enthusiast known for detonating the studio with an inevitable cackle.",
+          providerId: "serper",
+          date: "3 days ago",
+        },
+        {
+          title: "Lew Zealand",
+          url: "https://muppets.example.com/lew-zealand",
+          description:
+            "Fish-throwing showman with a deadpan delivery and a stubbornly sincere mission.",
+          providerId: "serper",
+          date: "3 days ago",
+        },
+      ];
       const sourceCodeUrl = "https://github.com/seven20solutions/indiesearch.git";
       const defaultProviderId = "serper";
       const providerConfigs = {
@@ -736,12 +824,13 @@
               payload?.data?.results ||
               (Array.isArray(payload) ? payload : []);
 
-            return hits.slice(0, maxResults).map((hit) => ({
-              title:
-                hit?.title || hit?.description || hit?.meta?.title || hit?.label || "Untitled result",
-              url: hit?.url || hit?.link || hit?.metadata?.url || "",
-              description: summarizeDescription(hit),
-            }));
+               return hits.slice(0, maxResults).map((hit) => ({
+               title:
+                 hit?.title || hit?.description || hit?.meta?.title || hit?.label || "Untitled result",
+               url: hit?.url || hit?.link || hit?.metadata?.url || "",
+               description: summarizeDescription(hit),
+               providerId: "exa",
+             }));
           },
         },
         serper: {
@@ -764,12 +853,14 @@
             }
             const data = await response.json();
             const hits = data?.organic || data?.results || [];
-            return hits.slice(0, maxResults).map((entry) => ({
-              title: entry?.title || entry?.titleNoFormatting || entry?.heading || query,
-              url: entry?.link || entry?.url || entry?.displayLink || `https://google.serper.dev/search?q=${encodeURIComponent(query)}`,
-              description:
-                entry?.snippet || entry?.description || entry?.body || "Powered by Serper Search",
-            }));
+             return hits.slice(0, maxResults).map((entry) => ({
+               title: entry?.title || entry?.titleNoFormatting || entry?.heading || query,
+               url: entry?.link || entry?.url || entry?.displayLink || `https://google.serper.dev/search?q=${encodeURIComponent(query)}`,
+               description:
+                 entry?.snippet || entry?.description || entry?.body || "Powered by Serper Search",
+               providerId: "serper",
+               date: entry?.date,
+             }));
           },
         },
       };
@@ -1226,9 +1317,15 @@
         titleLink.target = "_blank";
         titleLink.rel = "noopener noreferrer";
 
-        const description = document.createElement("p");
-        description.className = "result-description";
-        description.textContent = item.description;
+         const description = document.createElement("p");
+         description.className = "result-description";
+         description.textContent = item.description;
+         if (item.providerId === "serper" && item.date) {
+           const date = document.createElement("span");
+           date.className = "result-description-date";
+           date.textContent = ` · ${item.date}`;
+           description.appendChild(date);
+         }
 
         const meta = document.createElement("p");
         meta.className = "result-url";
@@ -1273,6 +1370,16 @@
       }
 
       async function runSearch(query) {
+        const normalized = query?.trim().toLowerCase();
+        if (normalized === "muppets") {
+          renderResults(muppetEasterEggResults);
+          setStatus("Showing 10 easter-egg Muppet results.");
+          updateQuery(query);
+          if (searchButton) {
+            searchButton.disabled = false;
+          }
+          return;
+        }
         const provider = getProviderConfig();
         if (provider.requiresKey && !currentKey) {
           setStatus("Add a key before searching.", "error");
