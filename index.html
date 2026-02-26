@@ -476,6 +476,10 @@
         padding-bottom: 0;
       }
 
+      .result-card.answer-card {
+        border-color: transparent;
+      }
+
       .result-card.highlighted {
         background: var(--result-highlight-bg);
         border-color: var(--result-highlight-border);
@@ -488,11 +492,25 @@
         font-family: "Arial", sans-serif;
       }
 
+      .result-answer-title {
+        font-size: 1.18rem;
+        font-weight: 600;
+        color: var(--link-color);
+        margin: 0;
+        font-family: "Arial", sans-serif;
+      }
+
       .result-description {
         margin: 0.35rem 0 0;
         font-size: 0.95rem;
         color: var(--desc-color);
         font-style: italic;
+      }
+
+      .result-card.answer-card .result-description {
+        font-style: normal;
+        font-weight: 500;
+        color: var(--text-color);
       }
 
       .result-description-date {
@@ -601,6 +619,7 @@
                 <select id="provider-select" class="select-control" aria-label="Choose search provider">
                   <option value="serper">Serper Search</option>
                   <option value="exa">Exa.ai (localhost only)</option>
+                  <option value="exa-answer">Answer by Exa.ai (localhost only)</option>
                 </select>
               </div>
               <span class="provider-note" id="provider-note">Exa full results</span>
@@ -789,7 +808,7 @@
         exa: {
           label: "Exa.ai",
           storageKey: "indieSearchKey-exa",
-          note: "Requires your Exa.ai API key.",
+          note: "Search mode that uses the Exa.ai web index (localhost only).",
           requiresKey: true,
           async search(query, key) {
             const response = await fetch("https://api.exa.ai/search", {
@@ -831,6 +850,75 @@
                description: summarizeDescription(hit),
                providerId: "exa",
              }));
+          },
+        },
+        "exa-answer": {
+          label: "Answer by Exa.ai",
+          storageKey: "indieSearchKey-exa",
+          note: "Answer mode for direct prompts; reuses your Exa.ai key.",
+          requiresKey: true,
+          async search(query, key) {
+            const payload = {
+              model: "exa",
+              messages: [{ role: "user", content: query }],
+              text: true,
+            };
+            const response = await fetch("https://api.exa.ai/chat/completions", {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "x-api-key": key,
+              },
+              body: JSON.stringify(payload),
+            });
+            if (!response.ok) {
+              const text = await response.text();
+              throw new Error(text || "Answer mode failed. Please double-check your key.");
+            }
+            const data = await response.json();
+            const answerCandidate =
+              typeof data?.answer === "string"
+                ? data.answer
+                : typeof data?.choices?.[0]?.answer === "string"
+                ? data.choices[0].answer
+                : typeof data?.choices?.[0]?.text === "string"
+                ? data.choices[0].text
+                : typeof data?.choices?.[0]?.message?.content === "string"
+                ? data.choices[0].message.content
+                : "";
+            const rawAnswer = answerCandidate;
+            const normalizedAnswer = normalizeText(answerCandidate);
+            const citationSource =
+              Array.isArray(data?.citations)
+                ? data.citations
+                : Array.isArray(data?.choices?.[0]?.citations)
+                ? data.choices[0].citations
+                : [];
+            const results = [];
+            if (normalizedAnswer) {
+              results.push({
+                providerId: "exa-answer",
+                type: "exa-answer",
+                title: "Answer",
+                description: normalizedAnswer,
+                rawDescription: rawAnswer,
+              });
+            }
+            const citationEntries = citationSource.map((citation) => {
+              const snippet = normalizeText(citation?.text) || citation?.title || citation?.id || "";
+              const truncated = snippet.length > 320 ? `${snippet.slice(0, 317)}...` : snippet;
+              return {
+                providerId: "exa-answer",
+                type: "exa-citation",
+                title: citation?.title || citation?.id || citation?.url || "Source",
+                url: citation?.url || citation?.id || "",
+                description: truncated,
+                date: citation?.publishedDate,
+              };
+            });
+            results.push(...citationEntries);
+            return results.slice(0, maxResults);
           },
         },
         serper: {
@@ -938,13 +1026,48 @@
           }, {})
         : {};
 
-      const normalizeText = (value) =>
+      const stripHtmlTags = (value) =>
+        typeof value === "string" ? value.replace(/<[^>]+>/g, " ") : "";
+      const stripMarkdownLinks = (value) =>
+        typeof value === "string"
+          ? value.replace(/\[([^\]]+?)\]\(([^)]+?)\)/g, "$1 ($2)")
+          : "";
+      const normalizeText = (value) => {
+        if (typeof value !== "string") {
+          return "";
+        }
+        const markdownAdjusted = stripMarkdownLinks(value);
+        const withoutHtml = stripHtmlTags(markdownAdjusted);
+        return withoutHtml.replace(/[\*`_#\[\]]/g, "").replace(/\s+/g, " ").trim();
+      };
+      const escapeHtml = (value) =>
         typeof value === "string"
           ? value
-              .replace(/[\*`_#\[\]]/g, "")
-              .replace(/\s+/g, " ")
-              .trim()
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#39;")
           : "";
+      const convertMarkdownToHtml = (value) => {
+        if (!value) {
+          return "";
+        }
+        const placeholders = [];
+        const replaced = value.replace(/\[([^\]]+?)\]\(([^)]+?)\)/g, (_match, text, url) => {
+          const id = placeholders.length;
+          placeholders.push({ text, url });
+          return `[[[LINK_${id}]]]`;
+        });
+        let escaped = escapeHtml(replaced);
+        placeholders.forEach((link, index) => {
+          const safeText = escapeHtml(link.text);
+          const safeUrl = escapeHtml(link.url);
+          const anchor = `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
+          escaped = escaped.replace(`[[[LINK_${index}]]]`, anchor);
+        });
+        return escaped.replace(/\n/g, "<br />");
+      };
 
       const themeStorageKey = "indieSearchTheme";
       const systemMedia = window.matchMedia("(prefers-color-scheme: dark)");
@@ -1307,52 +1430,82 @@
         }
       }
 
-      function buildResultCard(item) {
-        const card = document.createElement("article");
-        card.className = "result-card";
+        function buildResultCard(item) {
+          const card = document.createElement("article");
+          const isAnswer = item.type === "exa-answer";
+          card.className = isAnswer ? "result-card answer-card" : "result-card";
 
-        const titleLink = document.createElement("a");
-        titleLink.textContent = item.title;
-        titleLink.href = item.url || "#";
-        titleLink.target = "_blank";
-        titleLink.rel = "noopener noreferrer";
+          const titleElement = document.createElement(isAnswer ? "p" : "a");
+          titleElement.textContent = item.title || "Untitled result";
+          if (isAnswer) {
+            titleElement.className = "result-answer-title";
+          } else if (item.url) {
+            titleElement.href = item.url;
+            titleElement.target = "_blank";
+            titleElement.rel = "noopener noreferrer";
+          }
 
-         const description = document.createElement("p");
-         description.className = "result-description";
-         description.textContent = item.description;
-         if (item.providerId === "serper" && item.date) {
-           const date = document.createElement("span");
-           date.className = "result-description-date";
-           date.textContent = ` · ${item.date}`;
-           description.appendChild(date);
-         }
+          const description = document.createElement("p");
+          description.className = "result-description";
+          if (isAnswer) {
+            description.classList.add("answer-description");
+            const raw = item.rawDescription || item.description;
+            description.innerHTML = convertMarkdownToHtml(raw || "No description available.");
+          } else {
+            description.textContent = item.description || "No description available.";
+          }
+          if (item.providerId === "serper" && item.date) {
+            const date = document.createElement("span");
+            date.className = "result-description-date";
+            date.textContent = ` · ${item.date}`;
+            description.appendChild(date);
+          }
 
-        const meta = document.createElement("p");
-        meta.className = "result-url";
-        meta.textContent = item.url ? item.url : "Link unavailable";
+          card.append(titleElement, description);
 
-        card.append(titleLink, description, meta);
-        return card;
-      }
+          if (item.url) {
+            const meta = document.createElement("p");
+            meta.className = "result-url";
+            meta.textContent = item.url;
+            card.append(meta);
+          }
 
-      function renderResults(results) {
-        resultsList.innerHTML = "";
-        currentResults = results;
-        highlightedIndex = -1;
-        if (!results.length) {
-          const placeholder = document.createElement("p");
-          placeholder.className = "result-place-holder";
-          placeholder.textContent = "No results yet. Try a different query.";
-          resultsList.appendChild(placeholder);
-          return;
+          return card;
         }
 
-        results.forEach((result, index) => {
-          const card = buildResultCard(result);
-          card.dataset.index = index;
-          resultsList.appendChild(card);
-        });
-      }
+        function renderResults(results) {
+          resultsList.innerHTML = "";
+          const answerResult = results.find((item) => item.type === "exa-answer");
+          const citationResults = results.filter((item) => item.type === "exa-citation");
+          const regularResults = results.filter(
+            (item) => item.type !== "exa-answer" && item.type !== "exa-citation"
+          );
+          const orderedResults = [];
+          if (answerResult) {
+            orderedResults.push(answerResult);
+            orderedResults.push(...citationResults);
+          } else if (citationResults.length) {
+            orderedResults.push(...citationResults);
+          }
+          orderedResults.push(...regularResults);
+
+          currentResults = orderedResults;
+          highlightedIndex = -1;
+
+          if (!orderedResults.length) {
+            const placeholder = document.createElement("p");
+            placeholder.className = "result-place-holder";
+            placeholder.textContent = "No results yet. Try a different query.";
+            resultsList.appendChild(placeholder);
+            return;
+          }
+
+          orderedResults.forEach((result, index) => {
+            const card = buildResultCard(result);
+            card.dataset.index = index;
+            resultsList.appendChild(card);
+          });
+        }
 
       function applyHighlight(index) {
         const cards = Array.from(resultsList.querySelectorAll(".result-card"));
@@ -1397,8 +1550,9 @@
         try {
           const response = await provider.search(query, currentKey);
           renderResults(response);
-          const successMessage = response.length
-            ? `Showing ${response.length} result${response.length === 1 ? "" : "s"}`
+          const displayedCount = currentResults.length;
+          const successMessage = displayedCount
+            ? `Showing ${displayedCount} result${displayedCount === 1 ? "" : "s"}`
             : "No matches from the provider.";
           setStatus(successMessage);
           updateQuery(query);
