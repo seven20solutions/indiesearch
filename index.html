@@ -465,6 +465,49 @@
         gap: 1.1rem;
       }
 
+      .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.9rem;
+      }
+
+      .image-card {
+        border: 1px solid var(--result-border);
+        border-radius: 12px;
+        padding: 0.6rem 0.7rem 0.9rem;
+        background: var(--result-bg);
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        min-height: 100%;
+      }
+
+      .image-card a {
+        border-radius: 8px;
+        overflow: hidden;
+        display: block;
+      }
+
+      .image-card img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .image-card-title {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      .image-card-meta {
+        margin: 0;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+
       .result-card {
         padding-bottom: 0.65rem;
         border-bottom: 1px solid var(--result-border);
@@ -618,6 +661,7 @@
               <div class="provider-row">
                 <select id="provider-select" class="select-control" aria-label="Choose search provider">
                   <option value="serper">Serper Search</option>
+                  <option value="serper-images">Serper Images</option>
                   <option value="exa">Exa.ai (localhost only)</option>
                   <option value="exa-answer">Answer by Exa.ai (localhost only)</option>
                 </select>
@@ -949,6 +993,37 @@
                providerId: "serper",
                date: entry?.date,
              }));
+          },
+        },
+        "serper-images": {
+          label: "Serper Images",
+          storageKey: "indieSearchKey-serper",
+          note: "Image search powered by Serper's Google Images endpoint.",
+          requiresKey: true,
+          async search(query, key) {
+            const params = new URLSearchParams({
+              q: query,
+              gl: currentCountry || "us",
+              apiKey: key,
+            });
+            const response = await fetch(`https://google.serper.dev/images?${params}`, {
+              method: "GET",
+              redirect: "follow",
+            });
+            if (!response.ok) {
+              throw new Error("Serper Images API returned an error.");
+            }
+            const data = await response.json();
+            const images = Array.isArray(data?.images) ? data.images : [];
+            return images.slice(0, maxResults).map((entry) => ({
+              providerId: "serper-images",
+              type: "serper-image",
+              title: entry?.title || entry?.domain || "Image result",
+              imageUrl: entry?.imageUrl || entry?.thumbnailUrl || "",
+              thumbnailUrl: entry?.thumbnailUrl || entry?.imageUrl || "",
+              link: entry?.link || entry?.googleUrl || entry?.imageUrl || "",
+              domain: entry?.domain || entry?.source || "",
+            }));
           },
         },
       };
@@ -1430,6 +1505,58 @@
         }
       }
 
+        function buildImageCard(item, index) {
+          const card = document.createElement("article");
+          card.className = "image-card";
+          card.dataset.index = index;
+
+          const link = document.createElement("a");
+          link.href = item.link || item.imageUrl || "#";
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+
+          const image = document.createElement("img");
+          image.src = item.thumbnailUrl || item.imageUrl || "";
+          image.alt = item.title || item.domain || "Image result";
+          image.loading = "lazy";
+
+          link.appendChild(image);
+          card.appendChild(link);
+
+          const title = document.createElement("p");
+          title.className = "image-card-title";
+          title.textContent = item.title || item.domain || "Image result";
+          card.appendChild(title);
+
+          if (item.domain) {
+            const meta = document.createElement("p");
+            meta.className = "image-card-meta";
+            meta.textContent = item.domain;
+            card.appendChild(meta);
+          }
+
+          return card;
+        }
+
+        function renderImageResults(results) {
+          resultsList.innerHTML = "";
+          currentResults = results;
+          highlightedIndex = -1;
+
+          if (!results.length) {
+            const placeholder = document.createElement("p");
+            placeholder.className = "result-place-holder";
+            placeholder.textContent = "No images yet. Try another query.";
+            resultsList.appendChild(placeholder);
+            return;
+          }
+
+          const grid = document.createElement("div");
+          grid.className = "image-grid";
+          results.forEach((result, index) => grid.appendChild(buildImageCard(result, index)));
+          resultsList.appendChild(grid);
+        }
+
         function buildResultCard(item) {
           const card = document.createElement("article");
           const isAnswer = item.type === "exa-answer";
@@ -1474,6 +1601,11 @@
         }
 
         function renderResults(results) {
+          const hasImageResults = results.some((item) => item.providerId === "serper-images");
+          if (hasImageResults) {
+            renderImageResults(results);
+            return;
+          }
           resultsList.innerHTML = "";
           const answerResult = results.find((item) => item.type === "exa-answer");
           const citationResults = results.filter((item) => item.type === "exa-citation");

@@ -12,3 +12,7 @@
 ## v0.4
 
 - Added Exa.ai Answers for users using localhost. It will use the same key but provide an AI answer rather than a list of results. References are included in the answer.
+
+## v0.5
+
+- Added Serper Images provider with thumbnail grid results using the existing Serper API key.
