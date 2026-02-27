@@ -16,3 +16,7 @@
 ## v0.5
 
 - Added Serper Images provider with thumbnail grid results using the existing Serper API key.
+
+## v0.6
+
+- Added command palette and paging for Serper
