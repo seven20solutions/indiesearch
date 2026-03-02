@@ -4,7 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Indie Search</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png" />
     <meta
       name="description"
       content="A throwback search experience that lets you plug in your own Exa API key."
@@ -1716,6 +1721,17 @@
         window.scrollTo({ top: Math.max(0, target), behavior: "smooth" });
       };
 
+      let lastGKeyTime = 0;
+      const G_SEQUENCE_TIMEOUT = 600;
+
+      const handleScrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const handleScrollToBottom = () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      };
+
       const handlePaginationNext = () => {
         if (!lastQuery || isFetchingResults || currentProviderId !== "serper") {
           return;
@@ -2342,19 +2358,19 @@
               active.tagName === "TEXTAREA" ||
               active.isContentEditable);
 
-        if (commandPaletteOpen && event.key === "Escape") {
-          event.preventDefault();
-          closeCommandPalette();
-          return;
-        }
-        if (document.activeElement === searchInput && event.key === "Escape") {
-          event.preventDefault();
-          searchInput.blur();
-          return;
-        }
-        if (commandPaletteOpen) {
-          return;
-        }
+          if (commandPaletteOpen && event.key === "Escape") {
+            event.preventDefault();
+            closeCommandPalette();
+            return;
+          }
+          if (document.activeElement === searchInput && event.key === "Escape") {
+            event.preventDefault();
+            searchInput.blur();
+            return;
+          }
+          if (commandPaletteOpen) {
+            return;
+          }
 
           if (
             event.key === "/" &&
@@ -2379,6 +2395,23 @@
           }
 
           if (isEditable) {
+            return;
+          }
+
+          if (event.key === "G" || (event.key === "g" && event.shiftKey)) {
+            event.preventDefault();
+            handleScrollToBottom();
+            return;
+          }
+          if (event.key === "g") {
+            const now = Date.now();
+            if (now - lastGKeyTime < G_SEQUENCE_TIMEOUT) {
+              handleScrollToTop();
+              lastGKeyTime = 0;
+              event.preventDefault();
+              return;
+            }
+            lastGKeyTime = now;
             return;
           }
 
