@@ -1589,6 +1589,7 @@
                 updateKeyStatus(false);
                 updateFooter();
                 setStatus(`Switched to ${config.label}.`);
+                updateUrlParameters({ query: searchInput.value.trim() });
                 closeCommandPalette();
                 searchInput?.focus();
               },
@@ -2428,7 +2429,7 @@
         if (normalized === "muppets") {
           renderResults(muppetEasterEggResults);
           setStatus("Showing 10 easter-egg Muppet results.");
-          updateQuery(trimmedQuery);
+          updateUrlParameters({ query: trimmedQuery });
           if (searchButton) {
             searchButton.disabled = false;
           }
@@ -2476,7 +2477,7 @@
             ? `Showing ${displayedCount} result${displayedCount === 1 ? "" : "s"}`
             : "No matches from the provider.";
           setStatus(successMessage);
-          updateQuery(trimmedQuery);
+          updateUrlParameters({ query: trimmedQuery });
         } catch (error) {
           console.error(error);
           renderResults([]);
@@ -2488,12 +2489,42 @@
         }
       }
 
-      function updateQuery(query) {
-        const params = new URLSearchParams(window.location.search);
-        if (query) {
-          params.set("s", query);
+      const URL_PARAM_KEYS = {
+        query: "s",
+        provider: "searchprovider",
+        country: "country",
+        apiKey: "apikey",
+      };
+
+      function setUrlParam(params, key, value) {
+        if (value) {
+          params.set(key, value);
         } else {
-          params.delete("s");
+          params.delete(key);
+        }
+      }
+
+      function updateUrlParameters({ query, providerId, country, keepApiKeyParam = false } = {}) {
+        const params = new URLSearchParams(window.location.search);
+        if (typeof query !== "undefined") {
+          setUrlParam(params, URL_PARAM_KEYS.query, query);
+        }
+        const resolvedProvider = providerId || currentProviderId;
+        if (resolvedProvider) {
+          params.set(URL_PARAM_KEYS.provider, resolvedProvider);
+        } else {
+          params.delete(URL_PARAM_KEYS.provider);
+        }
+        const resolvedCountry = country || currentCountry;
+        if (resolvedCountry) {
+          params.set(URL_PARAM_KEYS.country, resolvedCountry);
+        } else {
+          params.delete(URL_PARAM_KEYS.country);
+        }
+        if (keepApiKeyParam && currentKey) {
+          params.set(URL_PARAM_KEYS.apiKey, currentKey);
+        } else {
+          params.delete(URL_PARAM_KEYS.apiKey);
         }
         const queryString = params.toString();
         const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
@@ -2512,30 +2543,60 @@
         }
       }
 
-      function syncQueryFromUrl() {
+      function parseUrlOverrides() {
         const params = new URLSearchParams(window.location.search);
-        const searchParam = params.get("s");
-        const decoded = decodeSearchParam(searchParam);
-        if (decoded) {
-          searchInput.value = decoded;
-          if (currentKey) {
-            runSearch(decoded, { resetPage: true });
-          } else {
-            setStatus("Save your key to load the saved search.");
-          }
+        return {
+          query: decodeSearchParam(params.get(URL_PARAM_KEYS.query)),
+          providerId: params.get(URL_PARAM_KEYS.provider),
+          country: params.get(URL_PARAM_KEYS.country),
+          apiKey: params.get(URL_PARAM_KEYS.apiKey),
+        };
+      }
+
+      function applyApiKeyFromUrl(apiKey) {
+        if (!apiKey || !keyInput) {
+          return;
         }
+        const trimmed = apiKey.trim();
+        if (!trimmed) {
+          return;
+        }
+        const provider = getProviderConfig();
+        try {
+          if (provider.storageKey) {
+            localStorage.setItem(provider.storageKey, trimmed);
+          }
+        } catch (error) {
+          console.warn("Unable to store API key from URL", error);
+        }
+        currentKey = trimmed;
+        keyInput.value = trimmed;
       }
 
       document.addEventListener("DOMContentLoaded", () => {
+        const urlOverrides = parseUrlOverrides();
+
         loadProviderSelection();
+        if (urlOverrides.providerId && providerConfigs[urlOverrides.providerId]) {
+          saveProviderSelection(urlOverrides.providerId);
+        }
         syncProviderSelect();
         setProviderNote();
         updateChatControlsVisibility();
-        loadKeyFromStorage();
+
         loadCountryFromStorage();
+        if (urlOverrides.country) {
+          saveCountry(urlOverrides.country);
+        }
+        syncCountrySelect();
+
+        loadKeyFromStorage();
+        if (urlOverrides.apiKey) {
+          applyApiKeyFromUrl(urlOverrides.apiKey);
+        }
+
         loadThemeFromStorage();
         updateKeyStatus();
-        syncCountrySelect();
         themeButtons = Array.from(document.querySelectorAll(".theme-toggle button[data-theme-value]"));
         applyThemePreference(themePreference);
         updateThemeButtons(themeButtons);
@@ -2576,6 +2637,7 @@
             updateKeyStatus(false);
             updateFooter();
             setStatus(`Switched to ${getProviderConfig().label}.`);
+            updateUrlParameters({ query: searchInput.value.trim() });
           });
         }
 
@@ -2595,6 +2657,7 @@
         if (countrySelect) {
           countrySelect.addEventListener("change", (event) => {
             saveCountry(event.target.value);
+            updateUrlParameters({ query: searchInput.value.trim() });
           });
         }
 
@@ -2736,7 +2799,16 @@
           }
         });
 
-        syncQueryFromUrl();
+        if (urlOverrides.query) {
+          searchInput.value = urlOverrides.query;
+          if (currentKey) {
+            runSearch(urlOverrides.query, { resetPage: true });
+          } else {
+            setStatus("Save your key to load the saved search.");
+          }
+        }
+
+        updateUrlParameters();
       });
 
       const handleSystemThemeChange = () => {
