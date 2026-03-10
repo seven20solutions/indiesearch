@@ -10,65 +10,76 @@
     <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png" />
     <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      crossorigin="anonymous"
+    />
     <meta
       name="description"
       content="A throwback search experience that lets you plug in your own Exa API key."
     />
-    <style>
-      :root {
-       font-family: "Georgia", "Times New Roman", serif;
-        --body-bg: #f7f7f7;
-        --shell-bg: #fff;
-        --border-color: #ddd;
-        --text-color: #111;
-        --subtext: #555;
-        --muted: #666;
-        --hotkey-text: #777;
-        --result-border: #eee;
-        --result-bg: #fff;
-        --result-highlight-bg: #f1f3ff;
-        --result-highlight-border: #cfd8ff;
-        --link-color: #1a0dab;
-        --desc-color: #3c4043;
-        --url-color: #007200;
-        --panel-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        --button-bg: #1a73e8;
-        --button-border: #1a73e8;
-      --control-panel-width: min(640px, 100%);
-      --palette-backdrop: rgba(13, 20, 40, 0.65);
-      --palette-panel-bg: #fff;
-      --palette-panel-border: rgba(15, 23, 42, 0.12);
-      --palette-panel-shadow: 0 25px 45px rgba(15, 23, 42, 0.4);
-      --palette-highlight-bg: #e8ecff;
-      --palette-highlight-border: #4b68f1;
-      --palette-text-muted: #5e6480;
-    }
+      <style>
+        :root {
+          font-family: "Tahoma", "Verdana", sans-serif;
+          --body-bg: linear-gradient(180deg, #a3a29a 0%, #8d8c84 45%, #7b7a73 100%);
+          --shell-bg: linear-gradient(180deg, #fefcf5 0%, #ded2b8 70%, #cfc2a5 100%);
+          --border-color: #7e7660;
+          --text-color: #1b1a14;
+          --subtext: #3d3a32;
+          --muted: #514d41;
+          --hotkey-text: #5a5548;
+          --result-border: #b9b39c;
+          --result-bg: #f4f0dd;
+          --result-highlight-bg: #e5d2b6;
+          --result-highlight-border: #c2ae88;
+          --link-color: #134274;
+          --desc-color: #302b23;
+          --url-color: #266c0f;
+          --panel-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+          --button-bg: #e3dbc1;
+          --button-border: #827855;
+          --control-panel-width: min(640px, 100%);
+          --palette-backdrop: rgba(13, 20, 40, 0.65);
+          --palette-panel-bg: #f5f1e2;
+          --palette-panel-border: rgba(15, 23, 42, 0.12);
+          --palette-panel-shadow: 0 25px 45px rgba(15, 23, 42, 0.4);
+          --palette-highlight-bg: #e8ecff;
+          --palette-highlight-border: #4b68f1;
+          --palette-text-muted: #5e6480;
+        }
 
-    html[data-theme="dark"] {
-      --body-bg: #0c0d11;
-        --shell-bg: #14161f;
-        --border-color: #2e2f3f;
-        --text-color: #eceff4;
-        --subtext: #c0c4d7;
-        --muted: #a7a9b8;
-        --hotkey-text: #c5c7d8;
-        --result-border: #1f2029;
-        --result-bg: #1c1f2a;
-        --result-highlight-bg: rgba(112, 129, 255, 0.18);
-        --result-highlight-border: rgba(112, 129, 255, 0.5);
-        --link-color: #8ab4f8;
-        --desc-color: #e8eaed;
-        --url-color: #8abf3b;
-        --panel-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
-        --button-bg: #8ab4f8;
-      --button-border: #8ab4f8;
-      --palette-panel-bg: #111327;
-      --palette-panel-border: rgba(255, 255, 255, 0.08);
-      --palette-panel-shadow: 0 25px 45px rgba(0, 0, 0, 0.55);
-      --palette-highlight-bg: rgba(112, 129, 255, 0.2);
-      --palette-highlight-border: rgba(112, 129, 255, 0.9);
-      --palette-text-muted: #9fa4c2;
-    }
+      html[data-theme="dark"] {
+        --body-bg: linear-gradient(180deg, #1f2026 0%, #16171c 65%, #0e0f14 100%);
+        --shell-bg: linear-gradient(180deg, #20212a 0%, #161523 70%, #0d0e15 100%);
+        --border-color: #2e2f39;
+        --text-color: #f4f4f2;
+        --subtext: #c4c4c6;
+        --muted: #9a99a3;
+        --hotkey-text: #b3b3b8;
+        --result-border: #2d2e36;
+        --result-bg: #161621;
+        --result-highlight-bg: #2b2b35;
+        --result-highlight-border: #3b3b45;
+        --link-color: #81a6ff;
+        --desc-color: #d7d7df;
+        --url-color: #7adaff;
+        --panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.75);
+        --button-bg: #26262d;
+        --button-border: #4a4a54;
+        --palette-panel-bg: #15151b;
+        --palette-panel-border: rgba(255, 255, 255, 0.12);
+        --palette-panel-shadow: 0 25px 45px rgba(0, 0, 0, 0.8);
+        --palette-highlight-bg: rgba(255, 255, 255, 0.08);
+        --palette-highlight-border: rgba(255, 255, 255, 0.16);
+        --palette-text-muted: #9091a0;
+      }
+
+      html[data-theme="dark"] .circle-action-button {
+        background: #2f2f37;
+        border-color: #5a5d66;
+        color: #f5f5f0;
+      }
 
       * {
         box-sizing: border-box;
@@ -86,7 +97,7 @@
       .shell {
         width: min(920px, 100%);
         background: var(--shell-bg);
-        border: 1px solid var(--border-color);
+        border: 2px solid var(--border-color);
         border-radius: 18px;
         box-shadow: var(--panel-shadow);
         padding: 2rem 2.5rem 2.75rem;
@@ -144,7 +155,8 @@
         padding: 0.85rem 0.95rem;
         font-size: 1rem;
         font-family: inherit;
-        background: #fff;
+        background: #fdfbf4;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
         transition: border 0.15s ease;
       }
 
@@ -176,21 +188,22 @@
         border: 1px solid var(--button-border);
         border-radius: 5px;
         background: var(--button-bg);
-        color: #fff;
+        color: var(--text-color);
         font-weight: 600;
         cursor: pointer;
         padding: 0 1.6rem;
         transition: background 0.2s ease;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 0 rgba(0, 0, 0, 0.08);
       }
 
       button:hover:not(:disabled) {
-        background: #1659c3;
+        background: #e7dcc2;
       }
 
       button:disabled {
-        opacity: 0.5;
+        opacity: 0.6;
         cursor: not-allowed;
-        background: #93b7ff;
+        background: #d7d1c0;
       }
 
       .key-status {
@@ -268,8 +281,8 @@
         height: 2.9rem;
         border-radius: 999px;
         border: 1px solid var(--button-border);
-        background: var(--button-bg);
-        color: #fff;
+        background: #e0dabd;
+        color: var(--text-color);
         font-size: 1.3rem;
         font-weight: 600;
         display: inline-flex;
@@ -281,7 +294,7 @@
       }
 
       .circle-action-button:hover:not(:disabled) {
-        background: #1659c3;
+        background: #f3ecd7;
       }
 
       .circle-action-button.css-override-clear {
@@ -723,6 +736,135 @@
         display: flex;
         flex-direction: column;
         gap: 1.1rem;
+      }
+
+
+      .serper-rich-feature-controls {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.45rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .serper-rich-feature-controls button {
+        border-radius: 999px;
+        border: 1px solid transparent;
+        background: rgba(40, 54, 90, 0.08);
+        color: var(--text-color);
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        padding: 0.65rem 1.2rem;
+        text-transform: uppercase;
+        transition: border-color 0.2s ease, background 0.2s ease;
+      }
+
+      .serper-rich-feature-controls button.active {
+        background: rgba(118, 100, 66, 0.95);
+        color: #fff;
+        border-color: rgba(118, 100, 66, 1);
+      }
+
+      .serper-rich-feature-controls button:focus-visible,
+      .serper-rich-feature-controls button:hover {
+        border-color: rgba(118, 100, 66, 1);
+      }
+
+      .serper-rich-image-carousel {
+        margin-top: 1rem;
+        border-radius: 18px;
+        border: 1px solid var(--result-border);
+        background: var(--result-bg);
+        padding: 0.5rem 0;
+        overflow: hidden;
+        box-shadow: 0 18px 30px rgba(13, 20, 40, 0.06);
+      }
+
+      .image-carousel-track {
+        display: flex;
+        gap: 0.75rem;
+        overflow-x: auto;
+        padding: 0 1rem 0.5rem;
+        scroll-snap-type: x mandatory;
+      }
+
+      .image-carousel-track::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .image-carousel-track::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 999px;
+      }
+
+      .image-carousel-tile {
+        min-width: 180px;
+        width: 220px;
+        border-radius: 16px;
+        border: 1px solid var(--result-border);
+        background: var(--result-bg);
+        padding: 0.65rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        scroll-snap-align: start;
+      }
+
+      .image-carousel-tile img {
+        width: 100%;
+        height: 130px;
+        object-fit: cover;
+        border-radius: 12px;
+        flex-shrink: 0;
+      }
+
+      .image-carousel-title {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-color);
+        line-height: 1.3;
+      }
+
+      .image-carousel-meta {
+        margin: 0;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+
+      .image-carousel-more {
+        align-items: center;
+        justify-content: center;
+      }
+
+      .image-carousel-more button {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 1px solid var(--button-border);
+        background: transparent;
+        color: var(--button-border);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .image-carousel-more button:hover:not(:disabled) {
+        background: rgba(26, 115, 232, 0.08);
+      }
+
+      .image-carousel-more button i {
+        font-size: 1.3rem;
+      }
+
+      .image-carousel-more span {
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-align: center;
       }
 
 
@@ -1263,6 +1405,14 @@
                 Paste a stylesheet URL (CORS-enabled) to override the look; saved locally for next time.
               </p>
             </div>
+            <div class="theme-toggle">
+              <span>Theme:</span>
+              <div class="theme-toggle-group" role="group" aria-label="Select theme">
+                <button class="small-pill" data-theme-value="light" type="button">Light</button>
+                <button class="small-pill" data-theme-value="dark" type="button">Dark</button>
+                <button class="small-pill" data-theme-value="system" type="button">System</button>
+              </div>
+            </div>
           </div>
         </div>
         <button
@@ -1299,15 +1449,27 @@
           Hotkeys: `/` focus search, `Ctrl+K` open the command palette, `↑/↓` (or `j/k`) to select a
           result, Enter to open it.
         </p>
-        <div class="theme-toggle">
-          <span>Theme:</span>
-          <div class="theme-toggle-group" role="group" aria-label="Select theme">
-            <button class="small-pill" data-theme-value="light" type="button">Light</button>
-            <button class="small-pill" data-theme-value="dark" type="button">Dark</button>
-            <button class="small-pill" data-theme-value="system" type="button">System</button>
-          </div>
+        <div
+          class="serper-rich-feature-controls hidden"
+          id="serper-rich-feature-controls"
+          role="group"
+          aria-label="Serper Rich feature toggles"
+        >
+          <button class="small-pill active" data-serper-rich-feature="images" type="button">
+            Images
+          </button>
+          <button class="small-pill active" data-serper-rich-feature="ai" type="button">AI</button>
+          <button class="small-pill active" data-serper-rich-feature="web" type="button">Web</button>
         </div>
         <p class="status-message" id="status-message"></p>
+        <div
+          class="serper-rich-image-carousel hidden"
+          id="serper-rich-image-carousel"
+          role="region"
+          aria-live="polite"
+        >
+          <div class="image-carousel-track" id="serper-rich-carousel-track"></div>
+        </div>
         <div class="smart-results hidden" id="smart-results" aria-live="polite"></div>
         <div class="results-list" id="results-list">
           <p class="result-place-holder">Awaiting your first search.</p>
@@ -1749,6 +1911,7 @@
         } else {
           hideSmartResultsSection();
         }
+        updateSerperRichFeatureControlsVisibility();
       }
 
       const keyInput = document.getElementById("api-key");
@@ -1767,6 +1930,12 @@
       const searchForm = document.getElementById("search-form");
       const searchInput = document.getElementById("search-input");
       const resultsList = document.getElementById("results-list");
+      const serperRichFeatureControls = document.getElementById("serper-rich-feature-controls");
+      const serperRichFeatureButtons = serperRichFeatureControls
+        ? Array.from(serperRichFeatureControls.querySelectorAll("[data-serper-rich-feature]"))
+        : [];
+      const serperRichImageCarousel = document.getElementById("serper-rich-image-carousel");
+      const serperRichCarouselTrack = document.getElementById("serper-rich-carousel-track");
       const searchButton = document.getElementById("search-button");
       const statusMessage = document.getElementById("status-message");
       const paginationControls = document.getElementById("pagination-controls");
@@ -2629,6 +2798,13 @@
       let serperPage = 1;
       let chatMode = false;
       let conversationHistory = [];
+      const serperRichFeatureState = {
+        images: true,
+        ai: true,
+        web: true,
+      };
+      let imageExpansionLoading = false;
+      let imageExpansionResults = [];
 
       function setStatus(message, state) {
         statusMessage.textContent = message;
@@ -2686,6 +2862,77 @@
         }
       }
 
+      function refreshSerperRichFeatureButton(button) {
+        if (!button) {
+          return;
+        }
+        const feature = button.dataset.serperRichFeature;
+        const enabled = Boolean(serperRichFeatureState[feature]);
+        button.classList.toggle("active", enabled);
+        button.setAttribute("aria-pressed", enabled.toString());
+      }
+
+      function updateSerperRichFeatureControlsVisibility() {
+        if (!serperRichFeatureControls) {
+          return;
+        }
+        const show = isSerperRichMode();
+        serperRichFeatureControls.classList.toggle("hidden", !show);
+        if (!show) {
+          hideSerperRichImageCarousel();
+        }
+        serperRichFeatureButtons.forEach(refreshSerperRichFeatureButton);
+      }
+
+      function setSerperRichFeature(feature, value) {
+        if (!(feature in serperRichFeatureState)) {
+          return;
+        }
+        serperRichFeatureState[feature] = Boolean(value);
+        serperRichFeatureButtons
+          .filter((button) => button.dataset.serperRichFeature === feature)
+          .forEach(refreshSerperRichFeatureButton);
+      }
+
+      function handleSerperRichFeatureToggle(feature) {
+        if (!(feature in serperRichFeatureState)) {
+          return;
+        }
+        const nextValue = !serperRichFeatureState[feature];
+        setSerperRichFeature(feature, nextValue);
+        if (feature === "images") {
+          if (nextValue && lastQuery && isSerperRichMode()) {
+            void loadSerperRichImages();
+          } else {
+            hideSerperRichImageCarousel();
+          }
+          return;
+        }
+        if (feature === "ai") {
+          if (nextValue && lastQuery && isSerperRichMode()) {
+            void renderSmartResultsForQuery(lastQuery);
+          } else {
+            hideSmartResultsSection();
+          }
+          return;
+        }
+        if (feature === "web") {
+          renderResults(currentResults);
+        }
+      }
+
+      function hideSerperRichImageCarousel() {
+        if (serperRichImageCarousel) {
+          serperRichImageCarousel.classList.add("hidden");
+          serperRichImageCarousel.removeAttribute("aria-label");
+        }
+        if (serperRichCarouselTrack) {
+          serperRichCarouselTrack.innerHTML = "";
+        }
+        imageExpansionLoading = false;
+        imageExpansionResults = [];
+      }
+
       function updateChatModeStatus() {
         if (chatModeStatus) {
           if (!chatMode) {
@@ -2708,6 +2955,7 @@
         if (announce) {
           setStatus("Conversation reset.");
         }
+        updateSerperRichFeatureControlsVisibility();
         updateChatModeStatus();
         if (resultsList) {
           renderResults([]);
@@ -3028,6 +3276,109 @@
         }
       }
 
+        function buildSerperRichImageTile(item) {
+          const tile = document.createElement("article");
+          tile.className = "image-carousel-tile";
+
+          const link = document.createElement("a");
+          link.href = item.link || item.imageUrl || "#";
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+
+          const image = document.createElement("img");
+          image.src = item.thumbnailUrl || item.imageUrl || "";
+          image.alt = item.title || item.domain || "Image result";
+          image.loading = "lazy";
+
+          link.appendChild(image);
+
+          const title = document.createElement("p");
+          title.className = "image-carousel-title";
+          title.textContent = item.title || item.domain || "Image result";
+
+          tile.append(link, title);
+
+          if (item.domain) {
+            const meta = document.createElement("p");
+            meta.className = "image-carousel-meta";
+            meta.textContent = item.domain;
+            tile.appendChild(meta);
+          }
+
+          return tile;
+        }
+
+        function renderSerperRichImageCarousel(results) {
+          if (!serperRichCarouselTrack) {
+            return;
+          }
+          serperRichCarouselTrack.innerHTML = "";
+          const fragment = document.createDocumentFragment();
+          results.forEach((item) => fragment.appendChild(buildSerperRichImageTile(item)));
+          const moreTile = document.createElement("article");
+          moreTile.className = "image-carousel-tile image-carousel-more";
+          const moreButton = document.createElement("button");
+          moreButton.type = "button";
+          moreButton.innerHTML = '<i class="fa-solid fa-plus" aria-hidden="true"></i>';
+          moreButton.setAttribute("aria-label", "Switch to Serper Images");
+          moreButton.addEventListener("click", switchToSerperImagesMode);
+          const moreLabel = document.createElement("span");
+          moreLabel.textContent = "More images";
+          moreTile.append(moreButton, moreLabel);
+          fragment.appendChild(moreTile);
+          serperRichCarouselTrack.appendChild(fragment);
+          if (serperRichImageCarousel) {
+            serperRichImageCarousel.classList.remove("hidden");
+            serperRichImageCarousel.setAttribute("aria-label", `Image results for ${lastQuery}`);
+          }
+        }
+
+        async function loadSerperRichImages() {
+          if (
+            imageExpansionLoading ||
+            !lastQuery ||
+            !isSerperRichMode() ||
+            !serperRichFeatureState.images
+          ) {
+            return;
+          }
+          const provider = providerConfigs["serper-images"];
+          if (!provider || (provider.requiresKey && !currentKey)) {
+            setStatus("Add a Serper key before viewing images.", "error");
+            return;
+          }
+          imageExpansionLoading = true;
+          try {
+            const response = await provider.search(lastQuery, currentKey, { page: 1 });
+            imageExpansionResults = response.slice(0, resultsPerPage);
+            if (!imageExpansionResults.length) {
+              hideSerperRichImageCarousel();
+              return;
+            }
+            renderSerperRichImageCarousel(imageExpansionResults);
+          } catch (error) {
+            console.error("Image search failed", error);
+            hideSerperRichImageCarousel();
+          } finally {
+            imageExpansionLoading = false;
+          }
+        }
+
+        function switchToSerperImagesMode() {
+          if (!lastQuery) {
+            return;
+          }
+          saveProviderSelection("serper-images");
+          loadKeyFromStorage();
+          updateKeyStatus(false);
+          updateChatControlsVisibility();
+          setStatus("Switched to Serper Images.");
+          updateUrlParameters({ query: lastQuery, providerId: "serper-images" });
+          hideSerperRichImageCarousel();
+          updateSerperRichFeatureControlsVisibility();
+          runSearch(lastQuery, { resetPage: true });
+        }
+
         function buildImageCard(item, index) {
           const card = document.createElement("article");
           card.className = "image-card";
@@ -3316,6 +3667,7 @@
         }
 
         function renderResults(results) {
+          updateSerperRichFeatureControlsVisibility();
           const chatCards = buildChatConversationCards();
           if (chatCards.length) {
             renderChatCards(chatCards);
@@ -3327,7 +3679,17 @@
             return;
           }
           if (isSerperRichMode()) {
-            renderSerperRichResults(results);
+            if (serperRichFeatureState.web) {
+              renderSerperRichResults(results);
+            } else {
+              currentResults = [];
+              highlightedIndex = -1;
+              resultsList.innerHTML = "";
+              const placeholder = document.createElement("p");
+              placeholder.className = "result-place-holder";
+              placeholder.textContent = "Web results are disabled. Enable the Web pill under the search controls.";
+              resultsList.appendChild(placeholder);
+            }
             return;
           }
           hideSmartResultsSection();
@@ -3397,8 +3759,15 @@
           serperPage = 1;
         }
         lastQuery = trimmedQuery;
+        hideSerperRichImageCarousel();
         if (isSerperRichMode()) {
-          void renderSmartResultsForQuery(trimmedQuery);
+          if (serperRichFeatureState.ai) {
+            void renderSmartResultsForQuery(trimmedQuery);
+          } else {
+            hideSmartResultsSection();
+          }
+        } else {
+          hideSmartResultsSection();
         }
         const normalized = trimmedQuery.toLowerCase();
         if (normalized === "muppets") {
@@ -3447,6 +3816,11 @@
             updateChatModeStatus();
           }
           renderResults(response);
+          if (isSerperRichMode() && serperRichFeatureState.images) {
+            void loadSerperRichImages();
+          } else {
+            hideSerperRichImageCarousel();
+          }
           const displayedCount = currentResults.length;
           const successMessage = displayedCount
             ? `Showing ${displayedCount} result${displayedCount === 1 ? "" : "s"}`
@@ -3648,6 +4022,13 @@
           });
         });
 
+        serperRichFeatureButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const feature = button.dataset.serperRichFeature;
+            handleSerperRichFeatureToggle(feature);
+          });
+        });
+
         if (cssOverrideSave) {
           cssOverrideSave.addEventListener("click", async () => {
             const url = cssOverrideInput?.value.trim();
@@ -3727,12 +4108,12 @@
             return;
           }
 
-          const key = typeof event.key === "string" ? event.key : "";
-          if (key === "G" || (key === "g" && event.shiftKey)) {
-            event.preventDefault();
-            handleScrollToBottom();
-            return;
-          }
+        const key = typeof event.key === "string" ? event.key : "";
+        if (key === "G" || (key === "g" && event.shiftKey)) {
+          event.preventDefault();
+          handleScrollToBottom();
+          return;
+        }
           if (key === "g") {
             const now = Date.now();
             if (now - lastGKeyTime < G_SEQUENCE_TIMEOUT) {
@@ -3745,15 +4126,15 @@
             return;
           }
 
-          const keyLower = key.toLowerCase();
-          if (!keyLower) {
-            return;
-          }
-          if (keyLower === "h") {
-            event.preventDefault();
-            handlePaginationBack();
-            return;
-          }
+        const keyLower = key.toLowerCase();
+        if (!keyLower) {
+          return;
+        }
+        if (keyLower === "h") {
+          event.preventDefault();
+          handlePaginationBack();
+          return;
+        }
 
           if (keyLower === "l") {
             event.preventDefault();
