@@ -2798,11 +2798,42 @@
       let serperPage = 1;
       let chatMode = false;
       let conversationHistory = [];
-      const serperRichFeatureState = {
+      const serperRichFeatureStorageKey = "indieSearchSerperRichFeatures";
+      const defaultSerperRichFeatureState = {
         images: true,
         ai: true,
         web: true,
       };
+      const serperRichFeatureState = { ...defaultSerperRichFeatureState };
+      function loadSerperRichFeatureState() {
+        if (typeof localStorage === "undefined") {
+          return;
+        }
+        try {
+          const stored = localStorage.getItem(serperRichFeatureStorageKey);
+          if (!stored) {
+            return;
+          }
+          const parsed = JSON.parse(stored);
+          Object.keys(defaultSerperRichFeatureState).forEach((feature) => {
+            if (Object.prototype.hasOwnProperty.call(parsed, feature)) {
+              serperRichFeatureState[feature] = Boolean(parsed[feature]);
+            }
+          });
+        } catch (error) {
+          console.warn("Unable to restore Serper Rich features", error);
+        }
+      }
+      function persistSerperRichFeatureState() {
+        if (typeof localStorage === "undefined") {
+          return;
+        }
+        try {
+          localStorage.setItem(serperRichFeatureStorageKey, JSON.stringify(serperRichFeatureState));
+        } catch (error) {
+          console.warn("Unable to persist Serper Rich features", error);
+        }
+      }
       let imageExpansionLoading = false;
       let imageExpansionResults = [];
 
@@ -2892,6 +2923,7 @@
         serperRichFeatureButtons
           .filter((button) => button.dataset.serperRichFeature === feature)
           .forEach(refreshSerperRichFeatureButton);
+        persistSerperRichFeatureState();
       }
 
       function handleSerperRichFeatureToggle(feature) {
@@ -4021,6 +4053,10 @@
             updateThemeButtons(themeButtons);
           });
         });
+
+        loadSerperRichFeatureState();
+        serperRichFeatureButtons.forEach(refreshSerperRichFeatureButton);
+        updateSerperRichFeatureControlsVisibility();
 
         serperRichFeatureButtons.forEach((button) => {
           button.addEventListener("click", () => {
