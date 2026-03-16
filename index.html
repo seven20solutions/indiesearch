@@ -770,7 +770,9 @@
         border-color: rgba(118, 100, 66, 1);
       }
 
-      .serper-rich-image-carousel {
+      .serper-rich-image-carousel,
+      .serper-rich-video-carousel,
+      .serper-rich-news-carousel {
         margin-top: 1rem;
         border-radius: 18px;
         border: 1px solid var(--result-border);
@@ -780,7 +782,9 @@
         box-shadow: 0 18px 30px rgba(13, 20, 40, 0.06);
       }
 
-      .image-carousel-track {
+      .image-carousel-track,
+      .video-carousel-track,
+      .news-carousel-track {
         display: flex;
         gap: 0.75rem;
         overflow-x: auto;
@@ -788,16 +792,22 @@
         scroll-snap-type: x mandatory;
       }
 
-      .image-carousel-track::-webkit-scrollbar {
+      .image-carousel-track::-webkit-scrollbar,
+      .video-carousel-track::-webkit-scrollbar,
+      .news-carousel-track::-webkit-scrollbar {
         height: 6px;
       }
 
-      .image-carousel-track::-webkit-scrollbar-thumb {
+      .image-carousel-track::-webkit-scrollbar-thumb,
+      .video-carousel-track::-webkit-scrollbar-thumb,
+      .news-carousel-track::-webkit-scrollbar-thumb {
         background: rgba(0, 0, 0, 0.2);
         border-radius: 999px;
       }
 
-      .image-carousel-tile {
+      .image-carousel-tile,
+      .video-carousel-tile,
+      .news-carousel-tile {
         min-width: 180px;
         width: 220px;
         border-radius: 16px;
@@ -808,6 +818,24 @@
         flex-direction: column;
         gap: 0.45rem;
         scroll-snap-align: start;
+      }
+
+      .video-carousel-tile,
+      .news-carousel-tile {
+        position: relative;
+      }
+
+      .video-carousel-embed {
+        width: 100%;
+        height: 140px;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .video-carousel-embed iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
       }
 
       .image-carousel-tile img {
@@ -865,6 +893,28 @@
         font-size: 0.8rem;
         color: var(--muted);
         text-align: center;
+      }
+
+      .carousel-media-indicator {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.65rem;
+        padding: 0.1rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.65);
+      }
+
+      .carousel-media-indicator.video {
+        background: rgba(231, 57, 59, 0.95);
+      }
+
+      .carousel-media-indicator.news {
+        background: rgba(34, 45, 79, 0.9);
       }
 
 
@@ -1339,6 +1389,8 @@
                   <option value="serper">Serper Search</option>
                   <option value="serper-rich">Serper Rich</option>
                   <option value="serper-images">Serper Images</option>
+                  <option value="serper-videos">Serper Videos</option>
+                  <option value="serper-news">Serper News</option>
                 <option value="exa">Exa.ai (localhost only)</option>
                 <option value="exa-answer">Answer by Exa.ai (localhost only)</option>
                 <option value="openai">OpenAI GPT-5 Nano</option>
@@ -1455,9 +1507,9 @@
           role="group"
           aria-label="Serper Rich feature toggles"
         >
-          <button class="small-pill active" data-serper-rich-feature="images" type="button">
-            Images
-          </button>
+          <button class="small-pill" data-serper-rich-feature="images" type="button">Images</button>
+          <button class="small-pill" data-serper-rich-feature="videos" type="button">Videos</button>
+          <button class="small-pill" data-serper-rich-feature="news" type="button">News</button>
           <button class="small-pill active" data-serper-rich-feature="ai" type="button">AI</button>
           <button class="small-pill active" data-serper-rich-feature="web" type="button">Web</button>
         </div>
@@ -1469,6 +1521,22 @@
           aria-live="polite"
         >
           <div class="image-carousel-track" id="serper-rich-carousel-track"></div>
+        </div>
+        <div
+          class="serper-rich-video-carousel hidden"
+          id="serper-rich-video-carousel"
+          role="region"
+          aria-live="polite"
+        >
+          <div class="video-carousel-track" id="serper-rich-video-carousel-track"></div>
+        </div>
+        <div
+          class="serper-rich-news-carousel hidden"
+          id="serper-rich-news-carousel"
+          role="region"
+          aria-live="polite"
+        >
+          <div class="news-carousel-track" id="serper-rich-news-carousel-track"></div>
         </div>
         <div class="smart-results hidden" id="smart-results" aria-live="polite"></div>
         <div class="results-list" id="results-list">
@@ -1848,7 +1916,7 @@
             }
             const data = await response.json();
             const images = Array.isArray(data?.images) ? data.images : [];
-             return images.slice(0, resultsPerPage).map((entry) => ({
+            return images.slice(0, resultsPerPage).map((entry) => ({
               providerId: "serper-images",
               type: "serper-image",
               title: entry?.title || entry?.domain || "Image result",
@@ -1856,6 +1924,86 @@
               thumbnailUrl: entry?.thumbnailUrl || entry?.imageUrl || "",
               link: entry?.link || entry?.googleUrl || entry?.imageUrl || "",
               domain: entry?.domain || entry?.source || "",
+            }));
+          },
+        },
+        "serper-videos": {
+          label: "Serper Videos",
+          storageKey: "indieSearchKey-serper",
+          note: "Video search powered by Serper's Google Videos endpoint.",
+          requiresKey: true,
+          async search(query, key, { page } = {}) {
+            const params = new URLSearchParams({
+              q: query,
+              gl: currentCountry || "us",
+              apiKey: key,
+            });
+            const response = await fetch(`https://google.serper.dev/videos?${params}`, {
+              method: "GET",
+              redirect: "follow",
+            });
+            if (!response.ok) {
+              throw new Error("Serper Videos API returned an error.");
+            }
+            const data = await response.json();
+            const videos = Array.isArray(data?.videos)
+              ? data.videos
+              : Array.isArray(data?.items)
+              ? data.items
+              : Array.isArray(data?.results)
+              ? data.results
+              : [];
+            return videos.slice(0, resultsPerPage).map((entry) => ({
+              providerId: "serper-videos",
+              type: "serper-video",
+              title: entry?.title || entry?.name || entry?.description || "Video result",
+              imageUrl:
+                entry?.imageUrl || entry?.thumbnailUrl || entry?.thumbnail || entry?.image || "",
+              thumbnailUrl:
+                entry?.thumbnailUrl || entry?.thumbnail || entry?.imageUrl || entry?.image || "",
+              link: entry?.link || entry?.url || entry?.videoLink || entry?.source || "",
+              domain: entry?.domain || entry?.publisher || entry?.source || "",
+            }));
+          },
+        },
+        "serper-news": {
+          label: "Serper News",
+          storageKey: "indieSearchKey-serper",
+          note: "News search powered by Serper's Google News endpoint.",
+          requiresKey: true,
+          async search(query, key, { page } = {}) {
+            const params = new URLSearchParams({
+              q: query,
+              gl: currentCountry || "us",
+              apiKey: key,
+            });
+            const response = await fetch(`https://google.serper.dev/news?${params}`, {
+              method: "GET",
+              redirect: "follow",
+            });
+            if (!response.ok) {
+              throw new Error("Serper News API returned an error.");
+            }
+            const data = await response.json();
+            const articles = Array.isArray(data?.news)
+              ? data.news
+              : Array.isArray(data?.articles)
+              ? data.articles
+              : Array.isArray(data?.items)
+              ? data.items
+              : Array.isArray(data?.results)
+              ? data.results
+              : [];
+            return articles.slice(0, resultsPerPage).map((entry) => ({
+              providerId: "serper-news",
+              type: "serper-news",
+              title: entry?.title || entry?.headline || entry?.name || "News result",
+              imageUrl:
+                entry?.imageUrl || entry?.thumbnailUrl || entry?.thumbnail || entry?.image || "",
+              thumbnailUrl:
+                entry?.thumbnailUrl || entry?.imageUrl || entry?.thumbnail || entry?.image || "",
+              link: entry?.link || entry?.url || entry?.source || "",
+              domain: entry?.domain || entry?.publisher || entry?.source || "",
             }));
           },
         },
@@ -1936,6 +2084,10 @@
         : [];
       const serperRichImageCarousel = document.getElementById("serper-rich-image-carousel");
       const serperRichCarouselTrack = document.getElementById("serper-rich-carousel-track");
+      const serperRichVideoCarousel = document.getElementById("serper-rich-video-carousel");
+      const serperRichVideoCarouselTrack = document.getElementById("serper-rich-video-carousel-track");
+      const serperRichNewsCarousel = document.getElementById("serper-rich-news-carousel");
+      const serperRichNewsCarouselTrack = document.getElementById("serper-rich-news-carousel-track");
       const searchButton = document.getElementById("search-button");
       const statusMessage = document.getElementById("status-message");
       const paginationControls = document.getElementById("pagination-controls");
@@ -2800,7 +2952,9 @@
       let conversationHistory = [];
       const serperRichFeatureStorageKey = "indieSearchSerperRichFeatures";
       const defaultSerperRichFeatureState = {
-        images: true,
+        images: false,
+        videos: false,
+        news: false,
         ai: true,
         web: true,
       };
@@ -2836,6 +2990,10 @@
       }
       let imageExpansionLoading = false;
       let imageExpansionResults = [];
+      let videoExpansionLoading = false;
+      let videoExpansionResults = [];
+      let newsExpansionLoading = false;
+      let newsExpansionResults = [];
 
       function setStatus(message, state) {
         statusMessage.textContent = message;
@@ -2911,6 +3069,8 @@
         serperRichFeatureControls.classList.toggle("hidden", !show);
         if (!show) {
           hideSerperRichImageCarousel();
+          hideSerperRichVideoCarousel();
+          hideSerperRichNewsCarousel();
         }
         serperRichFeatureButtons.forEach(refreshSerperRichFeatureButton);
       }
@@ -2940,6 +3100,22 @@
           }
           return;
         }
+        if (feature === "videos") {
+          if (nextValue && lastQuery && isSerperRichMode()) {
+            void loadSerperRichVideos();
+          } else {
+            hideSerperRichVideoCarousel();
+          }
+          return;
+        }
+        if (feature === "news") {
+          if (nextValue && lastQuery && isSerperRichMode()) {
+            void loadSerperRichNews();
+          } else {
+            hideSerperRichNewsCarousel();
+          }
+          return;
+        }
         if (feature === "ai") {
           if (nextValue && lastQuery && isSerperRichMode()) {
             void renderSmartResultsForQuery(lastQuery);
@@ -2963,6 +3139,30 @@
         }
         imageExpansionLoading = false;
         imageExpansionResults = [];
+      }
+
+      function hideSerperRichVideoCarousel() {
+        if (serperRichVideoCarousel) {
+          serperRichVideoCarousel.classList.add("hidden");
+          serperRichVideoCarousel.removeAttribute("aria-label");
+        }
+        if (serperRichVideoCarouselTrack) {
+          serperRichVideoCarouselTrack.innerHTML = "";
+        }
+        videoExpansionLoading = false;
+        videoExpansionResults = [];
+      }
+
+      function hideSerperRichNewsCarousel() {
+        if (serperRichNewsCarousel) {
+          serperRichNewsCarousel.classList.add("hidden");
+          serperRichNewsCarousel.removeAttribute("aria-label");
+        }
+        if (serperRichNewsCarouselTrack) {
+          serperRichNewsCarouselTrack.innerHTML = "";
+        }
+        newsExpansionLoading = false;
+        newsExpansionResults = [];
       }
 
       function updateChatModeStatus() {
@@ -3308,108 +3508,292 @@
         }
       }
 
-        function buildSerperRichImageTile(item) {
-          const tile = document.createElement("article");
-          tile.className = "image-carousel-tile";
+      function buildSerperRichImageTile(item) {
+        const tile = document.createElement("article");
+        tile.className = "image-carousel-tile";
 
-          const link = document.createElement("a");
-          link.href = item.link || item.imageUrl || "#";
-          link.target = "_blank";
-          link.rel = "noopener noreferrer";
+        const link = document.createElement("a");
+        link.href = item.link || item.imageUrl || "#";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
 
-          const image = document.createElement("img");
-          image.src = item.thumbnailUrl || item.imageUrl || "";
-          image.alt = item.title || item.domain || "Image result";
-          image.loading = "lazy";
+        const image = document.createElement("img");
+        image.src = item.thumbnailUrl || item.imageUrl || "";
+        image.alt = item.title || item.domain || "Image result";
+        image.loading = "lazy";
 
-          link.appendChild(image);
+        link.appendChild(image);
 
-          const title = document.createElement("p");
-          title.className = "image-carousel-title";
-          title.textContent = item.title || item.domain || "Image result";
+        const title = document.createElement("p");
+        title.className = "image-carousel-title";
+        title.textContent = item.title || item.domain || "Image result";
 
-          tile.append(link, title);
+        tile.append(link, title);
 
-          if (item.domain) {
-            const meta = document.createElement("p");
-            meta.className = "image-carousel-meta";
-            meta.textContent = item.domain;
-            tile.appendChild(meta);
-          }
-
-          return tile;
+        if (item.domain) {
+          const meta = document.createElement("p");
+          meta.className = "image-carousel-meta";
+          meta.textContent = item.domain;
+          tile.appendChild(meta);
         }
 
-        function renderSerperRichImageCarousel(results) {
-          if (!serperRichCarouselTrack) {
-            return;
-          }
-          serperRichCarouselTrack.innerHTML = "";
-          const fragment = document.createDocumentFragment();
-          results.forEach((item) => fragment.appendChild(buildSerperRichImageTile(item)));
-          const moreTile = document.createElement("article");
-          moreTile.className = "image-carousel-tile image-carousel-more";
-          const moreButton = document.createElement("button");
-          moreButton.type = "button";
-          moreButton.innerHTML = '<i class="fa-solid fa-plus" aria-hidden="true"></i>';
-          moreButton.setAttribute("aria-label", "Switch to Serper Images");
-          moreButton.addEventListener("click", switchToSerperImagesMode);
-          const moreLabel = document.createElement("span");
-          moreLabel.textContent = "More images";
-          moreTile.append(moreButton, moreLabel);
-          fragment.appendChild(moreTile);
-          serperRichCarouselTrack.appendChild(fragment);
-          if (serperRichImageCarousel) {
-            serperRichImageCarousel.classList.remove("hidden");
-            serperRichImageCarousel.setAttribute("aria-label", `Image results for ${lastQuery}`);
+        return tile;
+      }
+
+      function addCarouselIndicator(tile, variant, label) {
+        if (!tile || !label) {
+          return;
+        }
+        const indicator = document.createElement("span");
+        indicator.className = `carousel-media-indicator ${variant}`;
+        indicator.textContent = label;
+        tile.appendChild(indicator);
+      }
+
+      function buildSerperRichVideoTile(item) {
+        const tile = buildSerperRichImageTile(item);
+        tile.classList.add("video-carousel-tile");
+        addCarouselIndicator(tile, "video", "Video");
+        const embedUrl = getYouTubeEmbedUrl(item.link);
+        const link = tile.querySelector("a");
+        if (embedUrl && link) {
+          const mediaWrapper = document.createElement("div");
+          mediaWrapper.className = "video-carousel-embed";
+          const iframe = document.createElement("iframe");
+          iframe.src = embedUrl;
+          iframe.loading = "lazy";
+          iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+          iframe.setAttribute("allowfullscreen", "");
+          mediaWrapper.appendChild(iframe);
+          const existingImage = link.querySelector("img");
+          if (existingImage) {
+            existingImage.replaceWith(mediaWrapper);
+          } else {
+            link.insertBefore(mediaWrapper, link.firstChild);
           }
         }
+        return tile;
+      }
 
-        async function loadSerperRichImages() {
-          if (
-            imageExpansionLoading ||
-            !lastQuery ||
-            !isSerperRichMode() ||
-            !serperRichFeatureState.images
-          ) {
-            return;
-          }
-          const provider = providerConfigs["serper-images"];
-          if (!provider || (provider.requiresKey && !currentKey)) {
-            setStatus("Add a Serper key before viewing images.", "error");
-            return;
-          }
-          imageExpansionLoading = true;
-          try {
-            const response = await provider.search(lastQuery, currentKey, { page: 1 });
-            imageExpansionResults = response.slice(0, resultsPerPage);
-            if (!imageExpansionResults.length) {
-              hideSerperRichImageCarousel();
-              return;
-            }
-            renderSerperRichImageCarousel(imageExpansionResults);
-          } catch (error) {
-            console.error("Image search failed", error);
+      function buildSerperRichNewsTile(item) {
+        const tile = buildSerperRichImageTile(item);
+        tile.classList.add("news-carousel-tile");
+        addCarouselIndicator(tile, "news", "News");
+        return tile;
+      }
+
+      function renderSerperRichImageCarousel(results) {
+        if (!serperRichCarouselTrack) {
+          return;
+        }
+        serperRichCarouselTrack.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+        results.forEach((item) => fragment.appendChild(buildSerperRichImageTile(item)));
+        const moreTile = document.createElement("article");
+        moreTile.className = "image-carousel-tile image-carousel-more";
+        const moreButton = document.createElement("button");
+        moreButton.type = "button";
+        moreButton.innerHTML = '<i class="fa-solid fa-plus" aria-hidden="true"></i>';
+        moreButton.setAttribute("aria-label", "Switch to Serper Images");
+        moreButton.addEventListener("click", switchToSerperImagesMode);
+        const moreLabel = document.createElement("span");
+        moreLabel.textContent = "More images";
+        moreTile.append(moreButton, moreLabel);
+        fragment.appendChild(moreTile);
+        serperRichCarouselTrack.appendChild(fragment);
+        if (serperRichImageCarousel) {
+          serperRichImageCarousel.classList.remove("hidden");
+          serperRichImageCarousel.setAttribute("aria-label", `Image results for ${lastQuery}`);
+        }
+      }
+
+      function renderSerperRichVideoCarousel(results) {
+        if (!serperRichVideoCarouselTrack) {
+          return;
+        }
+        serperRichVideoCarouselTrack.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+        results.forEach((item) => fragment.appendChild(buildSerperRichVideoTile(item)));
+        const moreTile = document.createElement("article");
+        moreTile.className = "image-carousel-tile image-carousel-more";
+        const moreButton = document.createElement("button");
+        moreButton.type = "button";
+        moreButton.innerHTML = '<i class="fa-solid fa-plus" aria-hidden="true"></i>';
+        moreButton.setAttribute("aria-label", "Switch to Serper Videos");
+        moreButton.addEventListener("click", switchToSerperVideosMode);
+        const moreLabel = document.createElement("span");
+        moreLabel.textContent = "More videos";
+        moreTile.append(moreButton, moreLabel);
+        fragment.appendChild(moreTile);
+        serperRichVideoCarouselTrack.appendChild(fragment);
+        if (serperRichVideoCarousel) {
+          serperRichVideoCarousel.classList.remove("hidden");
+          serperRichVideoCarousel.setAttribute("aria-label", `Video results for ${lastQuery}`);
+        }
+      }
+
+      function renderSerperRichNewsCarousel(results) {
+        if (!serperRichNewsCarouselTrack) {
+          return;
+        }
+        serperRichNewsCarouselTrack.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+        results.forEach((item) => fragment.appendChild(buildSerperRichNewsTile(item)));
+        const moreTile = document.createElement("article");
+        moreTile.className = "image-carousel-tile image-carousel-more";
+        const moreButton = document.createElement("button");
+        moreButton.type = "button";
+        moreButton.innerHTML = '<i class="fa-solid fa-plus" aria-hidden="true"></i>';
+        moreButton.setAttribute("aria-label", "Switch to Serper News");
+        moreButton.addEventListener("click", switchToSerperNewsMode);
+        const moreLabel = document.createElement("span");
+        moreLabel.textContent = "More news";
+        moreTile.append(moreButton, moreLabel);
+        fragment.appendChild(moreTile);
+        serperRichNewsCarouselTrack.appendChild(fragment);
+        if (serperRichNewsCarousel) {
+          serperRichNewsCarousel.classList.remove("hidden");
+          serperRichNewsCarousel.setAttribute("aria-label", `News results for ${lastQuery}`);
+        }
+      }
+
+      async function loadSerperRichImages() {
+        if (
+          imageExpansionLoading ||
+          !lastQuery ||
+          !isSerperRichMode() ||
+          !serperRichFeatureState.images
+        ) {
+          return;
+        }
+        const provider = providerConfigs["serper-images"];
+        if (!provider || (provider.requiresKey && !currentKey)) {
+          setStatus("Add a Serper key before viewing images.", "error");
+          return;
+        }
+        imageExpansionLoading = true;
+        try {
+          const response = await provider.search(lastQuery, currentKey, { page: 1 });
+          imageExpansionResults = response.slice(0, resultsPerPage);
+          if (!imageExpansionResults.length) {
             hideSerperRichImageCarousel();
-          } finally {
-            imageExpansionLoading = false;
-          }
-        }
-
-        function switchToSerperImagesMode() {
-          if (!lastQuery) {
             return;
           }
-          saveProviderSelection("serper-images");
-          loadKeyFromStorage();
-          updateKeyStatus(false);
-          updateChatControlsVisibility();
-          setStatus("Switched to Serper Images.");
-          updateUrlParameters({ query: lastQuery, providerId: "serper-images" });
+          renderSerperRichImageCarousel(imageExpansionResults);
+        } catch (error) {
+          console.error("Image search failed", error);
           hideSerperRichImageCarousel();
-          updateSerperRichFeatureControlsVisibility();
-          runSearch(lastQuery, { resetPage: true });
+        } finally {
+          imageExpansionLoading = false;
         }
+      }
+
+      async function loadSerperRichVideos() {
+        if (
+          videoExpansionLoading ||
+          !lastQuery ||
+          !isSerperRichMode() ||
+          !serperRichFeatureState.videos
+        ) {
+          return;
+        }
+        const provider = providerConfigs["serper-videos"];
+        if (!provider || (provider.requiresKey && !currentKey)) {
+          setStatus("Add a Serper key before viewing videos.", "error");
+          return;
+        }
+        videoExpansionLoading = true;
+        try {
+          const response = await provider.search(lastQuery, currentKey, { page: 1 });
+          videoExpansionResults = response.slice(0, resultsPerPage);
+          if (!videoExpansionResults.length) {
+            hideSerperRichVideoCarousel();
+            return;
+          }
+          renderSerperRichVideoCarousel(videoExpansionResults);
+        } catch (error) {
+          console.error("Video search failed", error);
+          hideSerperRichVideoCarousel();
+        } finally {
+          videoExpansionLoading = false;
+        }
+      }
+
+      async function loadSerperRichNews() {
+        if (
+          newsExpansionLoading ||
+          !lastQuery ||
+          !isSerperRichMode() ||
+          !serperRichFeatureState.news
+        ) {
+          return;
+        }
+        const provider = providerConfigs["serper-news"];
+        if (!provider || (provider.requiresKey && !currentKey)) {
+          setStatus("Add a Serper key before viewing news.", "error");
+          return;
+        }
+        newsExpansionLoading = true;
+        try {
+          const response = await provider.search(lastQuery, currentKey, { page: 1 });
+          newsExpansionResults = response.slice(0, resultsPerPage);
+          if (!newsExpansionResults.length) {
+            hideSerperRichNewsCarousel();
+            return;
+          }
+          renderSerperRichNewsCarousel(newsExpansionResults);
+        } catch (error) {
+          console.error("News search failed", error);
+          hideSerperRichNewsCarousel();
+        } finally {
+          newsExpansionLoading = false;
+        }
+      }
+
+      function switchToSerperImagesMode() {
+        if (!lastQuery) {
+          return;
+        }
+        saveProviderSelection("serper-images");
+        loadKeyFromStorage();
+        updateKeyStatus(false);
+        updateChatControlsVisibility();
+        setStatus("Switched to Serper Images.");
+        updateUrlParameters({ query: lastQuery, providerId: "serper-images" });
+        hideSerperRichImageCarousel();
+        updateSerperRichFeatureControlsVisibility();
+        runSearch(lastQuery, { resetPage: true });
+      }
+
+      function switchToSerperVideosMode() {
+        if (!lastQuery) {
+          return;
+        }
+        saveProviderSelection("serper-videos");
+        loadKeyFromStorage();
+        updateKeyStatus(false);
+        updateChatControlsVisibility();
+        setStatus("Switched to Serper Videos.");
+        updateUrlParameters({ query: lastQuery, providerId: "serper-videos" });
+        hideSerperRichVideoCarousel();
+        updateSerperRichFeatureControlsVisibility();
+        runSearch(lastQuery, { resetPage: true });
+      }
+
+      function switchToSerperNewsMode() {
+        if (!lastQuery) {
+          return;
+        }
+        saveProviderSelection("serper-news");
+        loadKeyFromStorage();
+        updateKeyStatus(false);
+        updateChatControlsVisibility();
+        setStatus("Switched to Serper News.");
+        updateUrlParameters({ query: lastQuery, providerId: "serper-news" });
+        hideSerperRichNewsCarousel();
+        updateSerperRichFeatureControlsVisibility();
+        runSearch(lastQuery, { resetPage: true });
+      }
 
         function buildImageCard(item, index) {
           const card = document.createElement("article");
@@ -3792,6 +4176,8 @@
         }
         lastQuery = trimmedQuery;
         hideSerperRichImageCarousel();
+        hideSerperRichVideoCarousel();
+        hideSerperRichNewsCarousel();
         if (isSerperRichMode()) {
           if (serperRichFeatureState.ai) {
             void renderSmartResultsForQuery(trimmedQuery);
@@ -3848,10 +4234,26 @@
             updateChatModeStatus();
           }
           renderResults(response);
-          if (isSerperRichMode() && serperRichFeatureState.images) {
-            void loadSerperRichImages();
+          if (isSerperRichMode()) {
+            if (serperRichFeatureState.images) {
+              void loadSerperRichImages();
+            } else {
+              hideSerperRichImageCarousel();
+            }
+            if (serperRichFeatureState.videos) {
+              void loadSerperRichVideos();
+            } else {
+              hideSerperRichVideoCarousel();
+            }
+            if (serperRichFeatureState.news) {
+              void loadSerperRichNews();
+            } else {
+              hideSerperRichNewsCarousel();
+            }
           } else {
             hideSerperRichImageCarousel();
+            hideSerperRichVideoCarousel();
+            hideSerperRichNewsCarousel();
           }
           const displayedCount = currentResults.length;
           const successMessage = displayedCount
