@@ -4161,7 +4161,14 @@
       }
 
       async function runSearch(query, { resetPage = false } = {}) {
-        const trimmedQuery = query?.trim();
+        let trimmedQuery = query?.trim();
+        // If the query ends with an exclamation mark and we're using Serper (or Serper Rich),
+        // treat this as a signal to auto-jump to the first result. Remove trailing !s before searching.
+        let autoJumpToFirst = false;
+        if (typeof trimmedQuery === "string" && trimmedQuery.endsWith("!") && isSerperPaginationMode()) {
+          autoJumpToFirst = true;
+          trimmedQuery = trimmedQuery.replace(/!+$/, "").trim();
+        }
         if (!trimmedQuery) {
           setStatus("Type something and press Search.", "error");
           updatePaginationControls();
@@ -4220,6 +4227,16 @@
             page,
             chatContext,
           });
+          // If the auto-jump flag is set and we have at least one result, navigate to the first result.
+          if (autoJumpToFirst && Array.isArray(response) && response.length) {
+            const first = response[0];
+            const targetUrl = first?.url || first?.link || "";
+            if (targetUrl) {
+              // Navigate the current tab directly to the first result.
+              window.location.href = targetUrl;
+              return;
+            }
+          }
           if (chatMode && currentProviderId === "openai") {
             const assistantText = response
               .filter((item) => item.providerId === "openai")
