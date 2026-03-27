@@ -4600,6 +4600,27 @@
 
         if (urlOverrides.query) {
           searchInput.value = urlOverrides.query;
+
+          // If no Serper API key is stored, gracefully forward the initial
+          // query directly to Google instead of requiring the user to save a key.
+          try {
+            const serperCfg = providerConfigs["serper"];
+            const serperStorageKey = serperCfg && serperCfg.storageKey;
+            const serperKeyStored = serperStorageKey ? localStorage.getItem(serperStorageKey) : null;
+
+            if (!serperKeyStored) {
+              const q = encodeURIComponent(String(urlOverrides.query || "").trim());
+              if (q) {
+                window.location.href = `https://www.google.com/search?q=${q}`;
+                return;
+              }
+            }
+          } catch (e) {
+            // If localStorage is unavailable or an error occurs, fall back to
+            // the in-app behavior below without throwing.
+            console.warn("Serper fallback check failed", e);
+          }
+
           if (currentKey) {
             runSearch(urlOverrides.query, { resetPage: true });
           } else {
